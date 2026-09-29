@@ -23,37 +23,3 @@ Dự án website thương mại điện tử chuyên ngành Mẹ & Bé, mô ph�
    * Thư viện ảnh, quà tặng kèm, cam kết giao siêu tốc 1h.
    * Cập nhật giỏ hàng tức thì bằng JavaScript.
    * Form đặt hàng giao 1h và thanh toán linh hoạt.
-
-## Hướng Dẫn Chạy Dự Án
-
-### 1. Cài đặt thư viện:
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Cấu hình kết nối Supabase (Tùy chọn):
-Tạo file `.env` từ `.env.example` và điền chuỗi kết nối Supabase Postgres:
-```env
-DATABASE_URL=postgresql://postgres.xxxxxx:YOUR_PASSWORD@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require
-```
-*(Nếu không điền, hệ thống sẽ tự động dùng SQLite offline để bạn chạy ngay lập tức)*.
-
-### 3. Migrate và Khởi tạo Dữ liệu Mẫu:
-```bash
-python manage.py makemigrations
-python manage.py migrate
-python seed_data.py
-```
-
-### 4. Tạo tài khoản Quản trị (Admin):
-```bash
-python manage.py createsuperuser
-```
-
-### 5. Khởi chạy Server:
-```bash
-python manage.py runserver
-```
-Truy cập:
-* Giao diện người dùng: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-* Trang quản trị Django Admin: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
