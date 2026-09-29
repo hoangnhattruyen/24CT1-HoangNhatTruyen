@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat hỗ trợ khách hàng - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="max-width:700px; margin:0 auto;">
+    <div class="section-box-header">
+        <h1 class="section-box-title">💬 HỖ TRỢ KHÁCH HÀNG: {{ chat_session.customer_name }}</h1>
+        <a href="{% url 'dashboard:staff_dashboard' %}" class="view-all-link">‹ Quay lại Dashboard</a>
+    </div>
+
+    <div style="height:350px; overflow-y:auto; background:#FFF0F5; border-radius:8px; padding:16px; display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+        {% for m in chat_session.messages.all %}
+        <div style="background:{% if m.is_staff %}var(--primary){% else %}#FFFFFF{% endif %}; color:{% if m.is_staff %}#FFFFFF{% else %}#2D3748{% endif %}; padding:8px 14px; border-radius:8px; width:fit-content; max-width:80%; align-self:{% if m.is_staff %}flex-end{% else %}flex-start{% endif %}; font-size:13px;">
+            <strong>{{ m.sender_name }}:</strong> {{ m.message }}
+            <div style="font-size:10px; opacity:0.8; text-align:right;">{{ m.created_at|date:"H:i" }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <form method="POST" style="display:flex; gap:10px;">
+        {% csrf_token %}
+        <input type="text" name="message" placeholder="Nhập câu trả lời tư vấn cho khách hàng..." required style="flex:1; padding:10px 14px; border-radius:20px; border:1px solid var(--border-color); font-size:14px; outline:none;">
+        <button type="submit" class="btn-search-submit" style="padding:10px 24px;">Gửi</button>
+    </form>
+</div>
+{% endblock %}

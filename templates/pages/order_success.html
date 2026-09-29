@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load humanize static %}
+
+{% block title %}Đặt hàng thành công - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="text-align:center; padding:50px 20px; max-width:680px; margin:0 auto;">
+    <div style="font-size:48px; margin-bottom:12px;">🎉</div>
+    <h1 style="font-size:24px; font-weight:900; color:var(--primary-hover); margin-bottom:8px;">ĐẶT HÀNG THÀNH CÔNG!</h1>
+    <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Cảm ơn bạn đã mua sắm tại M&B Shop. Đơn hàng của bạn đang được xử lý để giao siêu tốc.</p>
+
+    <div style="background:var(--primary-light); padding:16px; border-radius:var(--radius-md); text-align:left; margin-bottom:24px; font-size:14px;">
+        <p><strong>Mã đơn hàng:</strong> <span style="color:var(--primary-hover); font-weight:800;">#{{ order.order_code }}</span></p>
+        <p><strong>Người nhận:</strong> {{ order.customer_name }} ({{ order.customer_phone }})</p>
+        <p><strong>Địa chỉ giao:</strong> {{ order.shipping_address }}, {{ order.district }}, {{ order.city }}</p>
+        <p><strong>Phương thức:</strong> {{ order.get_shipping_method_display }}</p>
+        <p><strong>Tổng thanh toán:</strong> <span style="font-size:16px; font-weight:900; color:var(--primary-hover);">{{ order.total_amount|intcomma }}₫</span></p>
+    </div>
+
+    <a href="{% url 'products:index' %}" class="btn-checkout-primary" style="display:inline-block; width:auto; padding:10px 30px;">
+        Tiếp tục mua sắm
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}M&B Shop: Siêu thị Mẹ & Bé lớn nhất Việt Nam{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    {% include 'components/header.html' %}
+
+    <main class="main-wrapper">
+        <div class="container">
+            {% if messages %}
+                <div style="margin-bottom:16px;">
+                    {% for m in messages %}
+                    <div style="background:#FFF0F5; border-left:4px solid var(--primary-hover); padding:10px 16px; border-radius:6px; margin-bottom:8px; font-weight:700; font-size:14px; color:var(--primary-hover);">
+                        {{ m }}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    {% include 'components/footer.html' %}
+    {% include 'components/chat_widget.html' %}
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

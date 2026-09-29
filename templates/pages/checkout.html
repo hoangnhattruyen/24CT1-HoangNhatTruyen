@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load humanize static %}
+
+{% block title %}Thanh toán đơn hàng - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="margin-bottom:24px;">
+    <h1 style="font-size:22px; font-weight:900; color:var(--primary-hover); margin-bottom:20px;">⚡ ĐẶT HÀNG & GIAO SIÊU TỐC 1H</h1>
+
+    <form action="{% url 'orders:checkout' %}" method="POST">
+        {% csrf_token %}
+        <div class="cart-page-grid">
+            <!-- Form thông tin giao hàng -->
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <h3 style="font-size:16px; font-weight:800; color:var(--primary-hover);">1. Thông tin người nhận</h3>
+                
+                <div>
+                    <label style="font-size:13px; font-weight:700;">Họ và tên người nhận *</label>
+                    <input type="text" name="customer_name" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;" placeholder="Ví dụ: Nguyễn Văn A">
+                </div>
+
+                <div>
+                    <label style="font-size:13px; font-weight:700;">Số điện thoại *</label>
+                    <input type="tel" name="customer_phone" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;" placeholder="Ví dụ: 0912345678">
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                    <div>
+                        <label style="font-size:13px; font-weight:700;">Tỉnh / Thành phố *</label>
+                        <select name="city" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;">
+                            <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                            <option value="Hà Nội">Hà Nội</option>
+                            <option value="Đà Nẵng">Đà Nẵng</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:13px; font-weight:700;">Quận / Huyện *</label>
+                        <input type="text" name="district" value="Quận 1" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;">
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-size:13px; font-weight:700;">Địa chỉ nhận hàng chi tiết *</label>
+                    <input type="text" name="shipping_address" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;" placeholder="Số nhà, tên đường, phường/xã...">
+                </div>
+
+                <h3 style="font-size:16px; font-weight:800; color:var(--primary-hover); margin-top:10px;">2. Phương thức giao hàng</h3>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <label style="display:flex; align-items:center; gap:8px; background:var(--primary-light); padding:12px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        <input type="radio" name="shipping_method" value="FAST_1H" checked>
+                        <span>⚡ Giao Siêu Tốc 1 Giờ (Ưu tiên mẹ & bé cần gấp)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; background:#F7FAFC; padding:12px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        <input type="radio" name="shipping_method" value="STANDARD">
+                        <span>📦 Giao tiêu chuẩn (1 - 2 ngày)</span>
+                    </label>
+                </div>
+
+                <h3 style="font-size:16px; font-weight:800; color:var(--primary-hover); margin-top:10px;">3. Phương thức thanh toán</h3>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <label style="display:flex; align-items:center; gap:8px; background:#F7FAFC; padding:12px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        <input type="radio" name="payment_method" value="COD" checked>
+                        <span>💵 Thanh toán tiền mặt khi nhận hàng (COD)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; background:#F7FAFC; padding:12px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        <input type="radio" name="payment_method" value="VNPAY">
+                        <span>💳 VNPAY / Thẻ ATM / QR Pay</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Tóm tắt đơn hàng -->
+            <div class="summary-card">
+                <h3 style="font-size:16px; font-weight:800; margin-bottom:12px;">Đơn hàng của bạn</h3>
+                {% for item in cart.items.all %}
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+                    <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                    <span style="font-weight:700;">{{ item.subtotal|intcomma }}₫</span>
+                </div>
+                {% endfor %}
+
+                <div class="summary-row" style="border-top:1px solid #E2E8F0; padding-top:10px; margin-top:10px;">
+                    <span>Tạm tính:</span>
+                    <span style="font-weight:700;">{{ cart.total_price|intcomma }}₫</span>
+                </div>
+                <div class="summary-row">
+                    <span>Phí ship:</span>
+                    <span style="color:green; font-weight:700;">Miễn phí</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Tổng cộng:</span>
+                    <span>{{ cart.total_price|intcomma }}₫</span>
+                </div>
+
+                <button type="submit" class="btn-checkout-primary">
+                    XÁC NHẬN ĐẶT HÀNG
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

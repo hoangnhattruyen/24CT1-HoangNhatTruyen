@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{{ title }} - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box">
+    <div class="section-box-header">
+        <h1 class="section-box-title">{{ title }}</h1>
+    </div>
+    <div class="products-grid-4">
+        {% for product in products %}
+            {% include 'components/product_card.html' with product=product %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

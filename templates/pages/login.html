@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Đăng nhập - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="max-width:420px; margin:40px auto; padding:30px;">
+    <h1 style="font-size:20px; font-weight:900; color:var(--primary-hover); text-align:center; margin-bottom:20px;">ĐĂNG NHẬP TÀI KHOẢN</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div style="margin-bottom:14px;">
+            <label style="font-size:13px; font-weight:700;">Tên đăng nhập / Số điện thoại</label>
+            <input type="text" name="username" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;">
+        </div>
+        <div style="margin-bottom:16px;">
+            <label style="font-size:13px; font-weight:700;">Mật khẩu</label>
+            <input type="password" name="password" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;">
+        </div>
+        <button type="submit" class="btn-checkout-primary" style="margin-top:0;">ĐĂNG NHẬP</button>
+        <p style="text-align:center; margin-top:14px; font-size:13px;">Chưa có tài khoản? <a href="{% url 'accounts:register' %}" style="color:var(--primary-hover); font-weight:700;">Đăng ký ngay</a></p>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Ca Trực Nhân Viên - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+            <h1 class="section-box-title" style="font-size:20px !important;">👩‍💼 CA TRỰC NHÂN VIÊN TƯ VẤN & BÁN HÀNG</h1>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Nhân viên trực: <strong>{{ user.first_name|default:user.username }}</strong></p>
+        </div>
+        <div>
+            <form action="{% url 'accounts:staff_toggle_shift' %}" method="POST">
+                {% csrf_token %}
+                {% if current_shift %}
+                <button type="submit" style="background:#E53E3E; color:#FFFFFF; border:none; padding:10px 20px; border-radius:20px; font-weight:800; cursor:pointer;">
+                    ⏹️ CHECK-OUT (KẾT THÚC CA TRỰC)
+                </button>
+                <div style="font-size:11px; text-align:right; margin-top:4px; color:green; font-weight:700;">● Đang trong ca trực từ {{ current_shift.check_in|date:"H:i" }}</div>
+                {% else %}
+                <button type="submit" style="background:var(--primary); color:#FFFFFF; border:none; padding:10px 20px; border-radius:20px; font-weight:800; cursor:pointer;">
+                    ▶️ CHECK-IN (BẮT ĐẦU CA TRỰC)
+                </button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Thống kê ca trực -->
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:20px;">
+    <div class="section-white-box" style="text-align:center; padding:18px;">
+        <div style="font-size:13px; color:var(--text-muted); font-weight:700; text-transform:uppercase;">SẢN PHẨM BÁN ĐƯỢC HÔM NAY</div>
+        <div style="font-size:28px; font-weight:900; color:var(--primary-hover); margin-top:6px;">{{ products_sold_today }}</div>
+    </div>
+    <div class="section-white-box" style="text-align:center; padding:18px;">
+        <div style="font-size:13px; color:var(--text-muted); font-weight:700; text-transform:uppercase;">DOANH THU ĐƠN HÀNG HÔM NAY</div>
+        <div style="font-size:28px; font-weight:900; color:#38A169; margin-top:6px;">{{ revenue_today|intcomma }}₫</div>
+    </div>
+    <div class="section-white-box" style="text-align:center; padding:18px;">
+        <div style="font-size:13px; color:var(--text-muted); font-weight:700; text-transform:uppercase;">PHIÊN CHAT ĐANG CHỜ TƯ VẤN</div>
+        <div style="font-size:28px; font-weight:900; color:var(--tag-fast); margin-top:6px;">{{ open_chats.count }}</div>
+    </div>
+</div>
+
+<div class="dashboard-grid-2col">
+    <!-- Cột trái: Quản lý Đơn hàng cần duyệt -->
+    <div class="section-white-box">
+        <div class="section-box-header">
+            <h2 class="section-box-title">📋 ĐƠN HÀNG CẦN XỬ LÝ & XÁC NHẬN</h2>
+        </div>
+        <div class="table-responsive">
+            <table class="cart-table" style="font-size:13px;">
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Xử lý</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in pending_orders %}
+                    <tr>
+                        <td style="font-weight:800; color:var(--primary-hover);">#{{ o.order_code }}</td>
+                        <td><strong>{{ o.customer_name }}</strong><br><small style="color:var(--text-muted);">{{ o.customer_phone }}</small></td>
+                        <td style="font-weight:800;">{{ o.total_amount|intcomma }}₫</td>
+                        <td><span style="background:var(--primary-light); color:var(--primary-hover); padding:2px 6px; border-radius:4px; font-size:11px; font-weight:700;">{{ o.get_status_display }}</span></td>
+                        <td>
+                            <form action="{% url 'dashboard:staff_update_order' o.id %}" method="POST" style="display:flex; gap:4px;">
+                                {% csrf_token %}
+                                <select name="status" style="font-size:11px; padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                                    <option value="PROCESSING">Xác nhận</option>
+                                    <option value="SHIPPING">Giao 1h</option>
+                                    <option value="DELIVERED">Đã giao</option>
+                                </select>
+                                <button type="submit" style="background:var(--primary); color:#FFFFFF; border:none; border-radius:4px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer;">Lưu</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">Không có đơn hàng nào cần xử lý lúc này.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Cột phải: Chat hỗ trợ & Tồn kho sản phẩm -->
+    <div class="content-column">
+        <div class="section-white-box">
+            <div class="section-box-header">
+                <h2 class="section-box-title">💬 HỖ TRỢ KHÁCH HÀNG TRỰC TUYẾN</h2>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+                {% for c in open_chats %}
+                <a href="{% url 'dashboard:staff_chat' c.id %}" style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#FFF0F5; border-radius:8px; border:1px solid #FFE4EC;">
+                    <div>
+                        <strong style="color:var(--text-main);">{{ c.customer_name }}</strong>
+                        <div style="font-size:12px; color:var(--text-muted);">Tin nhắn gần nhất: {{ c.updated_at|date:"H:i" }}</div>
+                    </div>
+                    <span style="background:var(--primary); color:#FFFFFF; padding:4px 10px; border-radius:12px; font-size:11px; font-weight:800;">Chat ngay ›</span>
+                </a>
+                {% empty %}
+                <p style="font-size:13px; color:var(--text-muted); text-align:center; padding:15px;">Không có phiên chat nào đang chờ.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="section-white-box">
+            <div class="section-box-header">
+                <h2 class="section-box-title">📦 THEO DÕI TỒN KHO SẢN PHẨM</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="cart-table" style="font-size:12px;">
+                    <thead>
+                        <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá bán</th>
+                            <th style="text-align:center;">Tồn kho</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in products_stock %}
+                        <tr>
+                            <td>{{ p.name|truncatechars:35 }}</td>
+                            <td style="font-weight:700;">{{ p.price|intcomma }}₫</td>
+                            <td style="text-align:center;">
+                                <span style="font-weight:800; {% if p.stock < 10 %}color:red; background:#FFF5F5; border:1px solid #FEB2B2;{% else %}color:green; background:#F0FFF4; border:1px solid #9AE6B4;{% endif %} padding:2px 8px; border-radius:10px;">
+                                    {{ p.stock }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

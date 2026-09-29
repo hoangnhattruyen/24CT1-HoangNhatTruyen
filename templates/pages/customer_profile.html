@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Tài khoản của tôi - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="layout-grid">
+    <aside class="category-sidebar" style="padding:16px;">
+        <h3 style="font-size:16px; font-weight:800; color:var(--primary-hover); margin-bottom:12px;">👤 TÀI KHOẢN CỦA BẠN</h3>
+        <ul style="font-size:14px; display:flex; flex-direction:column; gap:8px;">
+            <li><a href="{% url 'accounts:profile' %}" style="font-weight:700; color:var(--primary-hover);">• Thông tin cá nhân & Địa chỉ</a></li>
+            <li><a href="{% url 'orders:order_history' %}">• Lịch sử đơn hàng của tôi</a></li>
+        </ul>
+    </aside>
+
+    <div class="content-column">
+        <!-- Thông tin cá nhân -->
+        <div class="section-white-box">
+            <h2 class="section-box-title">Thông tin cá nhân</h2>
+            <form method="POST" style="margin-top:16px; display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_profile">
+                <div>
+                    <label style="font-size:13px; font-weight:700;">Họ và tên</label>
+                    <input type="text" name="full_name" value="{{ user.first_name }}" style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:6px; margin-top:4px;">
+                </div>
+                <div>
+                    <label style="font-size:13px; font-weight:700;">Số điện thoại</label>
+                    <input type="text" name="phone" value="{{ profile.phone }}" style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:6px; margin-top:4px;">
+                </div>
+                <div>
+                    <label style="font-size:13px; font-weight:700;">Email</label>
+                    <input type="email" name="email" value="{{ user.email }}" style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:6px; margin-top:4px;">
+                </div>
+                <div style="grid-column: span 2;">
+                    <button type="submit" class="btn-search-submit" style="width:auto; padding:8px 24px;">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sổ địa chỉ giao hàng -->
+        <div class="section-white-box">
+            <div class="section-box-header">
+                <h2 class="section-box-title">Sổ địa chỉ giao hàng</h2>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-bottom:20px;">
+                {% for a in addresses %}
+                <div style="border:1px solid var(--border-color); border-radius:8px; padding:12px; background:#FAFAFA;">
+                    <div style="font-weight:700; margin-bottom:4px;">{{ a.receiver_name }} ({{ a.phone }}) {% if a.is_default %}<span style="color:var(--primary-hover); font-size:11px;">[Mặc định]</span>{% endif %}</div>
+                    <div style="font-size:13px; color:var(--text-muted);">{{ a.street_address }}, {{ a.district }}, {{ a.city }}</div>
+                </div>
+                {% empty %}
+                <p style="font-size:13px; color:var(--text-muted);">Chưa có địa chỉ nào được lưu.</p>
+                {% endfor %}
+            </div>
+
+            <h3 style="font-size:14px; font-weight:800; color:var(--primary-hover); margin-bottom:8px;">+ Thêm địa chỉ mới</h3>
+            <form method="POST" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_address">
+                <input type="text" name="receiver_name" placeholder="Tên người nhận" required style="padding:8px; border:1px solid var(--border-color); border-radius:6px;">
+                <input type="text" name="phone" placeholder="Số điện thoại" required style="padding:8px; border:1px solid var(--border-color); border-radius:6px;">
+                <input type="text" name="city" value="TP. Hồ Chí Minh" required style="padding:8px; border:1px solid var(--border-color); border-radius:6px;">
+                <input type="text" name="district" placeholder="Quận/Huyện" required style="padding:8px; border:1px solid var(--border-color); border-radius:6px;">
+                <input type="text" name="street_address" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)" required style="grid-column:span 2; padding:8px; border:1px solid var(--border-color); border-radius:6px;">
+                <label style="font-size:13px; display:flex; align-items:center; gap:6px;">
+                    <input type="checkbox" name="is_default"> Đặt làm địa chỉ mặc định
+                </label>
+                <div style="grid-column: span 2;">
+                    <button type="submit" class="btn-search-submit" style="width:auto; padding:8px 24px;">Thêm địa chỉ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

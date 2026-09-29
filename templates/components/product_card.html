@@ -1,0 +1,39 @@
+{% load humanize %}
+<div class="product-card">
+    <div class="product-badges">
+        {% if product.discount_percent > 0 %}
+        <span class="badge-discount">-{{ product.discount_percent }}%</span>
+        {% endif %}
+        {% if product.is_fast_delivery_1h %}
+        <span class="badge-fast">⚡ Giao 1h</span>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'products:product_detail' product.slug %}" class="product-img-wrap">
+        <img src="{{ product.display_image }}" alt="{{ product.name }}" loading="lazy">
+    </a>
+
+    <div>
+        {% if product.brand %}
+        <span class="product-brand">{{ product.brand.name }}</span>
+        {% endif %}
+        <a href="{% url 'products:product_detail' product.slug %}">
+            <h3 class="product-name" title="{{ product.name }}">{{ product.name }}</h3>
+        </a>
+
+        {% if product.gift_description %}
+        <div class="product-gift">🎁 {{ product.gift_description }}</div>
+        {% endif %}
+
+        <div class="product-pricing">
+            <span class="current-price">{{ product.price|intcomma }}₫</span>
+            {% if product.original_price %}
+            <span class="old-price">{{ product.original_price|intcomma }}₫</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <button type="button" class="btn-add-cart-fast btn-add-to-cart" data-product-id="{{ product.id }}" data-quantity="1">
+        + Thêm vào giỏ
+    </button>
+</div>

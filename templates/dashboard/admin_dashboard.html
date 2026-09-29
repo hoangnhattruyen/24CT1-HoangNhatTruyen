@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Admin Dashboard - Quản Trị Hệ Thống M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+            <h1 class="section-box-title" style="font-size:20px !important;">📊 TRANG QUẢN TRỊ TỔNG THỂ (ADMIN PORTAL)</h1>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Báo cáo kinh doanh, quản lý nhân sự, kiểm soát tồn kho và phản hồi khách hàng.</p>
+        </div>
+        <div>
+            <a href="{% url 'dashboard:admin_staff_manage' %}" class="btn-checkout-primary" style="margin-top:0; padding:10px 20px; width:auto; font-size:14px;">
+                👥 Quản Lý & Tạo Tài Khoản Nhân Viên
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- 1. Báo cáo Doanh thu Ngày, Tuần, Tháng -->
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:24px;">
+    <div class="section-white-box" style="border-top:4px solid var(--primary); padding:18px;">
+        <div style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">DOANH THU HÔM NAY</div>
+        <div style="font-size:26px; font-weight:900; color:var(--primary-hover); margin-top:8px;">{{ rev_day|intcomma }}₫</div>
+    </div>
+    <div class="section-white-box" style="border-top:4px solid #3182CE; padding:18px;">
+        <div style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">DOANH THU TUẦN NÀY</div>
+        <div style="font-size:26px; font-weight:900; color:#3182CE; margin-top:8px;">{{ rev_week|intcomma }}₫</div>
+    </div>
+    <div class="section-white-box" style="border-top:4px solid #38A169; padding:18px;">
+        <div style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">DOANH THU THÁNG NÀY</div>
+        <div style="font-size:26px; font-weight:900; color:#38A169; margin-top:8px;">{{ rev_month|intcomma }}₫</div>
+    </div>
+</div>
+
+<!-- 2. Khối Nội dung 2 Cột Cân Đối -->
+<div class="dashboard-grid-2col">
+    <!-- Cột trái: Quản lý Nhân viên & Lịch sử Check-in -->
+    <div class="section-white-box">
+        <div class="section-box-header">
+            <h2 class="section-box-title">👥 NHÂN VIÊN & LỊCH SỬ CHECK-IN</h2>
+            <a href="{% url 'dashboard:admin_staff_manage' %}" class="view-all-link">Quản lý ›</a>
+        </div>
+        <div style="margin:4px 0 12px 0; font-size:13px; color:var(--text-muted);">
+            Tổng số tài khoản: <strong style="color:var(--text-main);">{{ staff_users.count }} người</strong>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="cart-table" style="font-size:13px;">
+                <thead>
+                    <tr>
+                        <th style="width:30%;">Nhân viên</th>
+                        <th style="width:25%;">Ngày</th>
+                        <th style="width:20%;">Giờ Vào</th>
+                        <th style="width:25%;">Giờ Ra</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in recent_shifts %}
+                    <tr>
+                        <td style="font-weight:700;">{{ s.staff.first_name|default:s.staff.username }}</td>
+                        <td>{{ s.shift_date|date:"d/m/Y" }}</td>
+                        <td><span style="background:#EDF2F7; padding:2px 6px; border-radius:4px;">{{ s.check_in|date:"H:i" }}</span></td>
+                        <td>
+                            {% if s.check_out %}
+                                <span style="background:#EDF2F7; padding:2px 6px; border-radius:4px;">{{ s.check_out|date:"H:i" }}</span>
+                            {% else %}
+                                <span style="color:#38A169; font-weight:800; background:#F0FFF4; padding:2px 8px; border-radius:12px; font-size:11px; border:1px solid #C6F6D5;">● Đang trực</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">Chưa có lịch sử ca trực.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Cột phải: Tồn kho & Đánh giá Feedback -->
+    <div class="content-column">
+        <!-- Cảnh báo tồn kho -->
+        <div class="section-white-box">
+            <div class="section-box-header">
+                <h2 class="section-box-title" style="color:#DD6B20 !important;">⚠️ CẢNH BÁO TỒN KHO SẢN PHẨM THẤP</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="cart-table" style="font-size:13px;">
+                    <thead>
+                        <tr>
+                            <th style="width:55%;">Sản phẩm</th>
+                            <th style="width:25%; text-align:center;">Tồn kho</th>
+                            <th style="width:20%; text-align:center;">Đã bán</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in low_stock_products %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'products:product_detail' p.slug %}" target="_blank" style="font-weight:700; color:var(--text-main);">
+                                    {{ p.name|truncatechars:40 }}
+                                </a>
+                            </td>
+                            <td style="text-align:center;">
+                                <span style="background:#FFF5F5; color:#E53E3E; font-weight:800; padding:2px 8px; border-radius:10px; border:1px solid #FEB2B2;">
+                                    {{ p.stock }}
+                                </span>
+                            </td>
+                            <td style="text-align:center; font-weight:700;">{{ p.sold_count }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align:center; color:green; padding:15px; font-weight:700;">
+                                ✅ Tất cả sản phẩm đều đủ số lượng tồn kho.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quản lý Feedback Đánh giá -->
+        <div class="section-white-box">
+            <div class="section-box-header">
+                <h2 class="section-box-title">⭐ QUẢN LÝ ĐÁNH GIÁ & FEEDBACK KHÁCH HÀNG</h2>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+                {% for r in recent_reviews %}
+                <div style="border:1px solid var(--border-color); padding:12px; border-radius:8px; background:#FAFAFA; font-size:13px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong>{{ r.user.first_name|default:r.user.username }}</strong>
+                        <span style="color:#ECC94B; font-weight:800;">{{ r.rating }} ⭐</span>
+                    </div>
+                    <div style="font-size:12px; color:var(--text-muted); margin:4px 0;">Sản phẩm: <strong>{{ r.product.name }}</strong></div>
+                    <p style="margin:6px 0; color:var(--text-main); font-style:italic;">"{{ r.comment }}"</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px dashed #E2E8F0; padding-top:6px;">
+                        <span style="font-size:11px; color:var(--text-muted);">{{ r.created_at|date:"d/m/Y H:i" }}</span>
+                        <form action="{% url 'dashboard:admin_toggle_review' r.id %}" method="POST" style="margin:0;">
+                            {% csrf_token %}
+                            {% if r.is_approved %}
+                                <button type="submit" style="background:#FFF5F5; color:#E53E3E; border:1px solid #FEB2B2; padding:3px 8px; border-radius:4px; font-weight:700; cursor:pointer; font-size:11px;">
+                                    🚫 Ẩn đánh giá
+                                </button>
+                            {% else %}
+                                <button type="submit" style="background:#F0FFF4; color:#38A169; border:1px solid #9AE6B4; padding:3px 8px; border-radius:4px; font-weight:700; cursor:pointer; font-size:11px;">
+                                    ✅ Duyệt hiển thị
+                                </button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:var(--text-muted); text-align:center; padding:15px;">Chưa có đánh giá nào.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

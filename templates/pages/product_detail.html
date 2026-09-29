@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load humanize static %}
+
+{% block title %}{{ product.name }} - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="margin-bottom:24px;">
+    <div style="display:grid; grid-template-columns: 1fr 1.2fr; gap:36px;">
+        <!-- Left: Image Gallery -->
+        <div>
+            <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; padding:20px; text-align:center;">
+                <img src="{{ product.display_image }}" alt="{{ product.name }}" style="max-height:380px; margin:0 auto;" id="main-product-img">
+            </div>
+        </div>
+
+        <!-- Right: Product Info -->
+        <div>
+            {% if product.brand %}
+            <div style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Thương hiệu: {{ product.brand.name }}</div>
+            {% endif %}
+            
+            <h1 style="font-size:22px; font-weight:800; color:var(--text-main); margin:6px 0 12px 0;">{{ product.name }}</h1>
+            
+            <div style="display:flex; align-items:center; gap:12px; font-size:14px; margin-bottom:16px;">
+                <span style="color:#ECC94B; font-weight:800;">⭐ {{ product.rating }} / 5.0</span>
+                <span style="color:var(--text-muted);">({{ product.review_count }} đánh giá)</span>
+                <span style="color:var(--text-muted);">| Mã SKU: <strong>{{ product.sku }}</strong></span>
+            </div>
+
+            <!-- Price Box -->
+            <div style="background:var(--primary-light); padding:16px 20px; border-radius:var(--radius-md); display:flex; align-items:baseline; gap:16px; margin-bottom:16px;">
+                <span style="font-size:28px; font-weight:900; color:var(--primary-hover);">{{ product.price|intcomma }}₫</span>
+                {% if product.original_price %}
+                <span style="font-size:16px; color:var(--text-muted); text-decoration:line-through;">{{ product.original_price|intcomma }}₫</span>
+                <span class="badge-discount">-{{ product.discount_percent }}%</span>
+                {% endif %}
+            </div>
+
+            {% if product.gift_description %}
+            <div style="background:#FEFCBF; border:1px solid #F6E05E; padding:12px 16px; border-radius:var(--radius-sm); margin-bottom:16px; color:var(--tag-gift); font-weight:700; font-size:14px;">
+                🎁 Quà tặng kèm: {{ product.gift_description }}
+            </div>
+            {% endif %}
+
+            <!-- Guarantees -->
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-bottom:20px; font-size:13px;">
+                <div style="background:#F7FAFC; padding:10px; border-radius:8px;">⚡ <strong>Giao Siêu Tốc 1h</strong> trong khu vực nội thành</div>
+                <div style="background:#F7FAFC; padding:10px; border-radius:8px;">🔄 <strong>Đổi trả 7 ngày</strong> nếu lỗi từ nhà sản xuất</div>
+                <div style="background:#F7FAFC; padding:10px; border-radius:8px;">💯 <strong>100% Chính Hãng</strong> nguồn gốc rõ ràng</div>
+                <div style="background:#F7FAFC; padding:10px; border-radius:8px;">🚚 <strong>Freeship</strong> cho đơn hàng từ 249.000₫</div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex; gap:16px;">
+                <button type="button" class="btn-checkout-primary btn-add-to-cart" data-product-id="{{ product.id }}" style="margin-top:0; flex:1;">
+                    🛒 Thêm Vào Giỏ Hàng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Specs & Description -->
+<div class="section-white-box" style="margin-bottom:24px;">
+    <h3 style="font-size:18px; font-weight:800; color:var(--primary-hover); margin-bottom:12px; border-bottom:2px solid var(--primary-light); padding-bottom:8px;">Mô tả sản phẩm</h3>
+    <div style="font-size:14px; line-height:1.8; color:var(--text-main);">
+        <p>{{ product.description|default:"Sản phẩm chính hãng chất lượng cao dành cho mẹ và bé, được phân phối trực tiếp tại chuỗi hệ thống siêu thị M&B Shop trên toàn quốc." }}</p>
+    </div>
+</div>
+
+<!-- Related Products -->
+{% if related_products %}
+<div class="section-white-box">
+    <div class="section-box-header">
+        <h3 class="section-box-title">Sản phẩm cùng danh mục</h3>
+    </div>
+    <div class="products-grid-4">
+        {% for p in related_products %}
+            {% include 'components/product_card.html' with product=p %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

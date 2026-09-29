@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Quản lý Tài Khoản Nhân Viên & Admin - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <h1 class="section-box-title">👥 QUẢN LÝ TÀI KHOẢN NHÂN VIÊN & QUẢN TRỊ VIÊN</h1>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Quản lý phân quyền, tình trạng kích hoạt và cấp tài khoản mới.</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <a href="{% url 'dashboard:admin_dashboard' %}" class="btn-img-search" style="padding:8px 16px;">‹ Báo cáo Doanh Thu</a>
+            <a href="{% url 'dashboard:admin_create_account' %}" class="btn-checkout-primary" style="margin-top:0; padding:8px 20px; width:auto;">
+                + Tạo Tài Khoản Mới
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="section-white-box">
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Họ và tên</th>
+                <th>Tên đăng nhập</th>
+                <th>Vai trò</th>
+                <th>Số điện thoại</th>
+                <th>Ngày tham gia</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in staff_list %}
+            <tr>
+                <td style="font-weight:700;">{{ u.first_name|default:"Chưa đặt tên" }}</td>
+                <td style="font-weight:800; color:var(--primary-hover);">@{{ u.username }}</td>
+                <td>
+                    {% if u.profile.role == 'ADMIN' or u.is_superuser %}
+                        <span style="background:#FED7D7; color:#C53030; padding:4px 8px; border-radius:4px; font-weight:800; font-size:11px;">👑 QUẢN TRỊ VIÊN (ADMIN)</span>
+                    {% else %}
+                        <span style="background:#C6F6D5; color:#22543D; padding:4px 8px; border-radius:4px; font-weight:800; font-size:11px;">👩‍💼 NHÂN VIÊN (STAFF)</span>
+                    {% endif %}
+                </td>
+                <td>{{ u.profile.phone|default:"---" }}</td>
+                <td>{{ u.date_joined|date:"d/m/Y" }}</td>
+                <td>
+                    {% if u.is_active %}
+                        <span style="color:green; font-weight:800;">● Hoạt động</span>
+                    {% else %}
+                        <span style="color:red; font-weight:800;">● Đã khóa</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="{% url 'dashboard:admin_toggle_staff_status' u.id %}" method="POST">
+                        {% csrf_token %}
+                        {% if u.is_active %}
+                            <button type="submit" style="background:#FFF5F5; color:#E53E3E; border:1px solid #FEB2B2; padding:4px 8px; border-radius:4px; font-weight:700; cursor:pointer; font-size:11px;">
+                                🔒 Khóa tài khoản
+                            </button>
+                        {% else %}
+                            <button type="submit" style="background:#F0FFF4; color:#38A169; border:1px solid #9AE6B4; padding:4px 8px; border-radius:4px; font-weight:700; cursor:pointer; font-size:11px;">
+                                🔓 Mở khóa
+                            </button>
+                        {% endif %}
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% load static %}
+<aside class="category-sidebar">
+    <div class="sidebar-title">
+        <span>☰</span> DANH MỤC SẢN PHẨM
+    </div>
+    <ul class="category-list">
+        {% for cat in global_categories %}
+        <li class="category-item">
+            <a href="{% url 'products:category' cat.slug %}" class="category-link">
+                <span>{{ cat.icon|default:"🍼" }} {{ cat.name }}</span>
+                <span style="font-size:12px; color:#A0AEC0;">›</span>
+            </a>
+
+            <!-- Mega Menu Flyout Popup -->
+            <div class="mega-flyout">
+                <div class="sub-categories-col">
+                    <h4>{{ cat.name }} - Nhóm sản phẩm</h4>
+                    <div class="sub-cat-grid">
+                        {% for sub in cat.children.all %}
+                        <div class="sub-cat-item">
+                            <a href="{% url 'products:category' sub.slug %}">• {{ sub.name }}</a>
+                        </div>
+                        {% empty %}
+                        <div class="sub-cat-item"><a href="{% url 'products:category' cat.slug %}">• Sản phẩm bán chạy</a></div>
+                        <div class="sub-cat-item"><a href="{% url 'products:category' cat.slug %}">• Hàng mới về</a></div>
+                        <div class="sub-cat-item"><a href="{% url 'products:category' cat.slug %}">• Khuyến mãi đặc biệt</a></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="brand-showcase-col">
+                    <h4>Thương hiệu chính hãng</h4>
+                    <div class="brand-logos-grid">
+                        {% for brand in cat.brands.all|slice:":6" %}
+                        <a href="{% url 'products:category' cat.slug %}?brand={{ brand.slug }}" class="brand-mini-card">
+                            {{ brand.name }}
+                        </a>
+                        {% empty %}
+                        <div class="brand-mini-card">Meiji</div>
+                        <div class="brand-mini-card">Aptamil</div>
+                        <div class="brand-mini-card">Huggies</div>
+                        <div class="brand-mini-card">Bobby</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</aside>

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hệ thống {{ total_count }} Siêu thị M&B Shop trên toàn quốc{% endblock %}
+
+{% block content %}
+<div class="section-white-box">
+    <div class="section-box-header">
+        <h1 class="section-box-title">📍 HỆ THỐNG {{ total_count }} SIÊU THỊ M&B Shop TOÀN QUỐC</h1>
+        <span style="font-size:13px; color:var(--text-muted);">Bấm vào tên tỉnh thành để xem danh sách siêu thị</span>
+    </div>
+
+    <!-- Accordion danh sách tỉnh thành -->
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+        {% regroup stores by province as stores_by_province %}
+        {% for group in stores_by_province %}
+        <div class="store-accordion-item" style="border:1.5px solid var(--border-color); border-radius:10px; overflow:hidden; background:#fff;">
+            <!-- Header hộp - bấm để mở/đóng -->
+            <button
+                onclick="toggleAccordion(this)"
+                style="width:100%; display:flex; justify-content:space-between; align-items:center;
+                       padding:14px 18px; background:var(--primary-light); border:none; cursor:pointer;
+                       font-size:15px; font-weight:800; color:var(--primary-hover); text-align:left;">
+                <span>📍 {{ group.grouper }}
+                    <span style="font-size:12px; font-weight:600; color:var(--text-muted); margin-left:8px;">
+                        ({{ group.list|length }} siêu thị)
+                    </span>
+                </span>
+                <span class="accordion-arrow" style="font-size:18px; transition:transform 0.3s;">▼</span>
+            </button>
+
+            <!-- Nội dung hộp - ẩn mặc định -->
+            <div class="accordion-body" style="display:none; padding:16px; background:#FAFAFA;">
+                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">
+                    {% for store in group.list %}
+                    <div style="border:1px solid #F0E0E8; border-radius:8px; padding:14px; background:#FFFFFF;
+                                box-shadow:0 1px 4px rgba(255,130,171,0.1); transition:box-shadow 0.2s;"
+                         onmouseover="this.style.boxShadow='0 4px 12px rgba(255,130,171,0.25)'"
+                         onmouseout="this.style.boxShadow='0 1px 4px rgba(255,130,171,0.1)'">
+                        <h4 style="font-size:14px; font-weight:800; color:var(--primary-hover); margin-bottom:8px;">
+                            🏪 {{ store.name }}
+                        </h4>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">
+                            📌 {{ store.address }}, {{ store.district }}
+                        </p>
+                        <p style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">
+                            🕐 {{ store.opening_hours }}
+                        </p>
+                        <p style="font-size:13px; color:var(--primary-hover); font-weight:800;">
+                            📞 {{ store.phone }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p style="color:var(--text-muted); text-align:center; padding:30px;">Chưa có dữ liệu siêu thị.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function toggleAccordion(btn) {
+    const body = btn.nextElementSibling;
+    const arrow = btn.querySelector('.accordion-arrow');
+    const isOpen = body.style.display === 'block';
+
+    // Đóng tất cả accordion khác
+    document.querySelectorAll('.accordion-body').forEach(b => b.style.display = 'none');
+    document.querySelectorAll('.accordion-arrow').forEach(a => {
+        a.style.transform = 'rotate(0deg)';
+        a.closest('button').style.background = 'var(--primary-light)';
+    });
+
+    // Mở/đóng cái hiện tại
+    if (!isOpen) {
+        body.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+        btn.style.background = 'var(--primary)';
+        btn.style.color = '#fff';
+    } else {
+        btn.style.background = 'var(--primary-light)';
+        btn.style.color = 'var(--primary-hover)';
+    }
+}
+</script>
+{% endblock %}

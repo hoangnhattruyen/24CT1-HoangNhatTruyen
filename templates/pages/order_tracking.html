@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Theo dõi đơn hàng #{{ order.order_code }} - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="margin-bottom:24px;">
+    <h1 class="section-box-title">⚡ THEO DÕI ĐƠN HÀNG #{{ order.order_code }}</h1>
+    
+    <!-- Timeline trạng thái -->
+    <div style="display:flex; justify-content:space-between; margin:30px 0; position:relative;">
+        <div style="text-align:center; flex:1;">
+            <div style="width:36px; height:36px; border-radius:50%; background:var(--primary); color:#FFFFFF; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800;">1</div>
+            <div style="font-size:12px; font-weight:700; margin-top:6px;">Đặt hàng thành công</div>
+        </div>
+        <div style="text-align:center; flex:1;">
+            <div style="width:36px; height:36px; border-radius:50%; background:{% if order.status != 'PENDING' %}var(--primary){% else %}#E2E8F0{% endif %}; color:#FFFFFF; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800;">2</div>
+            <div style="font-size:12px; font-weight:700; margin-top:6px;">Đang chuẩn bị hàng</div>
+        </div>
+        <div style="text-align:center; flex:1;">
+            <div style="width:36px; height:36px; border-radius:50%; background:{% if order.status in 'SHIPPING,DELIVERED' %}var(--primary){% else %}#E2E8F0{% endif %}; color:#FFFFFF; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800;">3</div>
+            <div style="font-size:12px; font-weight:700; margin-top:6px;">Đang giao (1h)</div>
+        </div>
+        <div style="text-align:center; flex:1;">
+            <div style="width:36px; height:36px; border-radius:50%; background:{% if order.status == 'DELIVERED' %}var(--primary){% else %}#E2E8F0{% endif %}; color:#FFFFFF; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800;">4</div>
+            <div style="font-size:12px; font-weight:700; margin-top:6px;">Đã giao thành công</div>
+        </div>
+    </div>
+
+    <!-- Danh sách sản phẩm trong đơn -->
+    <h3 style="font-size:16px; font-weight:800; color:var(--primary-hover); margin-bottom:12px;">Sản phẩm đã mua</h3>
+    <table class="cart-table">
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td style="font-weight:700;">{{ item.product_name }}</td>
+                <td>{{ item.price|intcomma }}₫ x {{ item.quantity }}</td>
+                <td style="font-weight:800; color:var(--primary-hover);">{{ item.subtotal|intcomma }}₫</td>
+                <td>
+                    {% if item.product %}
+                    <button onclick="document.getElementById('review-box-{{ item.id }}').style.display='block'" style="background:var(--primary-light); color:var(--primary-hover); border:1px solid var(--primary); padding:4px 10px; border-radius:6px; font-weight:700; cursor:pointer;">
+                        ⭐ Viết đánh giá
+                    </button>
+                    
+                    <!-- Modal/Box đánh giá -->
+                    <div id="review-box-{{ item.id }}" style="display:none; margin-top:10px; background:#FAFAFA; border:1px solid var(--border-color); padding:12px; border-radius:8px;">
+                        <form action="{% url 'products:add_review' item.product.slug %}" method="POST">
+                            {% csrf_token %}
+                            <label style="font-size:12px; font-weight:700;">Đánh giá sao:</label>
+                            <select name="rating" style="padding:4px; margin-bottom:6px;">
+                                <option value="5">⭐⭐⭐⭐⭐ (5 sao - Tuyệt vời)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 sao - Rất tốt)</option>
+                                <option value="3">⭐⭐⭐ (3 sao - Bình thường)</option>
+                            </select>
+                            <textarea name="comment" placeholder="Nhận xét cảm nhận của ba mẹ về sản phẩm..." required style="width:100%; padding:6px; border-radius:6px; border:1px solid #CBD5E0; font-size:13px;"></textarea>
+                            <button type="submit" class="btn-search-submit" style="margin-top:6px; padding:4px 14px;">Gửi đánh giá</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

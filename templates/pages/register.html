@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Đăng ký tài khoản - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box" style="max-width:420px; margin:40px auto; padding:30px;">
+    <h1 style="font-size:20px; font-weight:900; color:var(--primary-hover); text-align:center; margin-bottom:20px;">ĐĂNG KÝ TÀI KHOẢN MỚI</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div style="margin-bottom:12px;">
+            <label style="font-size:13px; font-weight:700;">Họ và tên</label>
+            <input type="text" name="full_name" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;">
+        </div>
+        <div style="margin-bottom:12px;">
+            <label style="font-size:13px; font-weight:700;">Tên đăng nhập</label>
+            <input type="text" name="username" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;">
+        </div>
+        <div style="margin-bottom:12px;">
+            <label style="font-size:13px; font-weight:700;">Số điện thoại</label>
+            <input type="tel" name="phone" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;">
+        </div>
+        <div style="margin-bottom:16px;">
+            <label style="font-size:13px; font-weight:700;">Mật khẩu</label>
+            <input type="password" name="password" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-top:4px;">
+        </div>
+        <button type="submit" class="btn-checkout-primary" style="margin-top:0;">TẠO TÀI KHOẢN</button>
+        <p style="text-align:center; margin-top:14px; font-size:13px;">Đã có tài khoản? <a href="{% url 'accounts:login' %}" style="color:var(--primary-hover); font-weight:700;">Đăng nhập</a></p>
+    </form>
+</div>
+{% endblock %}

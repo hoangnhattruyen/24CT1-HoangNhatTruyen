@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Lịch sử đơn hàng - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="section-white-box">
+    <h1 class="section-box-title">📦 LỊCH SỬ ĐƠN HÀNG CỦA BẠN</h1>
+    
+    {% if orders %}
+    <table class="cart-table" style="margin-top:16px;">
+        <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Ngày đặt</th>
+                <th>Người nhận</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for o in orders %}
+            <tr>
+                <td style="font-weight:800; color:var(--primary-hover);">#{{ o.order_code }}</td>
+                <td>{{ o.created_at|date:"d/m/Y H:i" }}</td>
+                <td>{{ o.customer_name }} ({{ o.customer_phone }})</td>
+                <td style="font-weight:800;">{{ o.total_amount|intcomma }}₫</td>
+                <td>
+                    <span style="background:var(--primary-light); color:var(--primary-hover); padding:4px 8px; border-radius:4px; font-weight:700; font-size:12px;">
+                        {{ o.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'orders:order_tracking' o.order_code %}" style="color:var(--tag-fast); font-weight:700;">Xem chi tiết & Theo dõi ›</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align:center; padding:40px 0; color:var(--text-muted);">
+        <p>Bạn chưa có đơn hàng nào.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

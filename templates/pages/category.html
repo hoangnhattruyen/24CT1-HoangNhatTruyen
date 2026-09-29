@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load humanize static %}
+
+{% block title %}{{ category.name }} - M&B Shop{% endblock %}
+
+{% block content %}
+<div class="layout-grid">
+    <!-- Cột trái: Bộ lọc danh mục -->
+    <aside class="category-sidebar">
+        <div class="sidebar-title">
+            <span>🔎</span> BỘ LỌC TÌM KIẾM
+        </div>
+        <div style="padding:16px;">
+            <h4 style="font-size:13px; font-weight:800; margin-bottom:8px; color:var(--primary-hover);">Thương hiệu</h4>
+            <ul style="font-size:13px;">
+                <li style="margin-bottom:6px;"><a href="{% url 'products:category' category.slug %}" style="font-weight:{% if not current_brand %}bold; color:var(--primary-hover);{% endif %}">Tất cả</a></li>
+                {% for b in available_brands %}
+                <li style="margin-bottom:6px;">
+                    <a href="?brand={{ b.slug }}" style="{% if current_brand == b.slug %}color:var(--primary-hover); font-weight:bold;{% endif %}">{{ b.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <h4 style="font-size:13px; font-weight:800; margin:16px 0 8px 0; color:var(--primary-hover);">Khoảng giá</h4>
+            <div style="display:flex; flex-direction:column; gap:6px; font-size:13px;">
+                <a href="?price_max=200000">• Dưới 200.000₫</a>
+                <a href="?price_min=200000&price_max=500000">• 200.000₫ - 500.000₫</a>
+                <a href="?price_min=500000">• Trên 500.000₫</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Cột phải: Danh sách sản phẩm -->
+    <div class="content-column">
+        <div class="section-white-box">
+            <div class="section-box-header">
+                <h1 class="section-box-title">{{ category.name }} ({{ products.count }} sản phẩm)</h1>
+                <div>
+                    <span style="font-size:13px; color:var(--text-muted);">Sắp xếp theo:</span>
+                    <select onchange="location = this.value;" style="padding:4px 8px; border-radius:6px; border:1px solid var(--border-color); font-size:13px;">
+                        <option value="?sort=newest" {% if current_sort == '-created_at' %}selected{% endif %}>Mới nhất</option>
+                        <option value="?sort=price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Giá tăng dần</option>
+                        <option value="?sort=price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Giá giảm dần</option>
+                    </select>
+                </div>
+            </div>
+
+            {% if products %}
+            <div class="products-grid-4">
+                {% for product in products %}
+                    {% include 'components/product_card.html' with product=product %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align:center; padding:40px 0; color:var(--text-muted);">
+                <p style="font-size:16px; font-weight:700;">Chưa có sản phẩm nào trong danh mục này.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

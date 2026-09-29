@@ -1,0 +1,72 @@
+{% load static %}
+<div class="top-announcement">
+    🎁 Sinh nhật 10 năm M&B Shop - Vòng quay may mắn trúng 100% quà tặng & Tã sữa giảm tới 50%!
+</div>
+
+<div class="top-bar">
+    <div class="container">
+        <div class="top-bar-left">
+            <span class="top-link">
+                CSKH: <a href="tel:{{ global_hotline }}" class="hotline-badge">📞 {{ global_hotline }}</a> (Miễn phí)
+            </span>
+            <a href="{% url 'stores:store_locator' %}" class="top-link highlight">
+                📍 Tìm Siêu Thị <strong>({{ global_total_stores }})</strong>
+            </a>
+            <span class="top-link" style="color:var(--tag-fast);">
+                ⚡ Giao Siêu Tốc 1h
+            </span>
+        </div>
+        <div class="top-bar-right">
+            {% if user.is_authenticated %}
+                {% if user.is_staff or user.profile.role == 'STAFF' %}
+                    <a href="{% url 'dashboard:staff_dashboard' %}" class="top-link" style="color:#D69E2E; font-weight:800;">💼 Ca Trực Nhân Viên</a>
+                {% endif %}
+                {% if user.is_superuser or user.profile.role == 'ADMIN' %}
+                    <a href="{% url 'dashboard:admin_dashboard' %}" class="top-link" style="color:#E53E3E; font-weight:800;">📊 Quản Trị Admin</a>
+                {% endif %}
+                <a href="{% url 'accounts:profile' %}" class="top-link">👤 {{ user.first_name|default:user.username }}</a>
+                <a href="{% url 'accounts:logout' %}" class="top-link" style="color:#E53E3E;">[Đăng xuất]</a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="top-link">👤 Đăng nhập</a>
+                <a href="{% url 'accounts:register' %}" class="top-link">Đăng ký</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<header class="main-header">
+    <div class="container">
+        <a href="{% url 'products:index' %}" class="brand-logo">
+            👶 M&B Shop<span>.com</span>
+        </a>
+
+        <div class="header-search-wrap">
+            <form action="{% url 'products:index' %}" method="GET" class="search-box">
+                <input type="text" id="search-input" name="q" class="search-input" placeholder="Ba mẹ muốn tìm mua gì cho bé hôm nay?" autocomplete="off">
+                <div class="search-actions">
+                    <button type="button" id="btn-open-img-search" class="btn-img-search">
+                        📷 Tìm bằng ảnh
+                    </button>
+                    <button type="submit" class="btn-search-submit">Tìm kiếm</button>
+                </div>
+            </form>
+            <div id="search-suggestions" class="search-suggestions"></div>
+        </div>
+
+        <div class="header-actions">
+            <a href="{% url 'products:best_sellers' %}" class="action-btn">
+                <span style="font-size:18px;">🔥</span>
+                <span>Bán chạy</span>
+            </a>
+            <a href="{% url 'products:top_rated' %}" class="action-btn">
+                <span style="font-size:18px;">⭐</span>
+                <span>Đánh giá cao</span>
+            </a>
+            <a href="{% url 'orders:cart' %}" class="action-btn">
+                <span style="font-size:20px;">🛒</span>
+                <span id="header-cart-count" class="cart-badge">{{ global_cart_count }}</span>
+                <span>Giỏ hàng</span>
+            </a>
+        </div>
+    </div>
+</header>

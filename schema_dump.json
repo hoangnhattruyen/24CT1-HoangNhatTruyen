@@ -1,0 +1,1291 @@
+{
+  "accounts_userprofile": {
+    "app": "accounts",
+    "model": "UserProfile",
+    "verbose_name": "user profile",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "user",
+        "type": "OneToOneField",
+        "verbose_name": "user",
+        "null": false,
+        "blank": false,
+        "related_to": "User"
+      },
+      {
+        "name": "role",
+        "type": "CharField",
+        "verbose_name": "Vai trò",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "phone",
+        "type": "CharField",
+        "verbose_name": "Số điện thoại",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "avatar",
+        "type": "FileField",
+        "verbose_name": "avatar",
+        "null": true,
+        "blank": true
+      },
+      {
+        "name": "date_of_birth",
+        "type": "DateField",
+        "verbose_name": "Ngày sinh",
+        "null": true,
+        "blank": true
+      },
+      {
+        "name": "baby_birth_date",
+        "type": "DateField",
+        "verbose_name": "Ngày sinh bé / Ngày dự sinh",
+        "null": true,
+        "blank": true
+      }
+    ]
+  },
+  "accounts_address": {
+    "app": "accounts",
+    "model": "Address",
+    "verbose_name": "Sổ địa chỉ",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "user",
+        "type": "ForeignKey",
+        "verbose_name": "user",
+        "null": false,
+        "blank": false,
+        "related_to": "User"
+      },
+      {
+        "name": "receiver_name",
+        "type": "CharField",
+        "verbose_name": "Tên người nhận",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "phone",
+        "type": "CharField",
+        "verbose_name": "Số điện thoại",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "city",
+        "type": "CharField",
+        "verbose_name": "Tỉnh/Thành",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "district",
+        "type": "CharField",
+        "verbose_name": "Quận/Huyện",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "street_address",
+        "type": "CharField",
+        "verbose_name": "Địa chỉ chi tiết",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_default",
+        "type": "BooleanField",
+        "verbose_name": "Địa chỉ mặc định",
+        "null": false,
+        "blank": false
+      }
+    ]
+  },
+  "accounts_staffshift": {
+    "app": "accounts",
+    "model": "StaffShift",
+    "verbose_name": "Ca trực nhân viên",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "staff",
+        "type": "ForeignKey",
+        "verbose_name": "Nhân viên",
+        "null": false,
+        "blank": false,
+        "related_to": "User"
+      },
+      {
+        "name": "shift_date",
+        "type": "DateField",
+        "verbose_name": "Ngày trực",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "check_in",
+        "type": "DateTimeField",
+        "verbose_name": "Giờ Check-in",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "check_out",
+        "type": "DateTimeField",
+        "verbose_name": "Giờ Check-out",
+        "null": true,
+        "blank": true
+      },
+      {
+        "name": "orders_processed_count",
+        "type": "PositiveIntegerField",
+        "verbose_name": "Số đơn xử lý trong ca",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "revenue_generated",
+        "type": "DecimalField",
+        "verbose_name": "Doanh thu ca trực (VNĐ)",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "notes",
+        "type": "TextField",
+        "verbose_name": "Ghi chú ca trực",
+        "null": false,
+        "blank": true
+      }
+    ]
+  },
+  "products_category": {
+    "app": "products",
+    "model": "Category",
+    "verbose_name": "Danh mục sản phẩm",
+    "fields": [
+      {
+        "name": "children",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "Category"
+      },
+      {
+        "name": "brands",
+        "type": "ManyToManyField",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "Brand"
+      },
+      {
+        "name": "products",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "Product"
+      },
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "name",
+        "type": "CharField",
+        "verbose_name": "Tên danh mục",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "slug",
+        "type": "SlugField",
+        "verbose_name": "slug",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "icon",
+        "type": "CharField",
+        "verbose_name": "Icon đại diện",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "parent",
+        "type": "ForeignKey",
+        "verbose_name": "Danh mục cha",
+        "null": true,
+        "blank": true,
+        "related_to": "Category"
+      },
+      {
+        "name": "order",
+        "type": "PositiveIntegerField",
+        "verbose_name": "Thứ tự",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_active",
+        "type": "BooleanField",
+        "verbose_name": "Kích hoạt",
+        "null": false,
+        "blank": false
+      }
+    ]
+  },
+  "products_brand": {
+    "app": "products",
+    "model": "Brand",
+    "verbose_name": "Thương hiệu",
+    "fields": [
+      {
+        "name": "products",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "Product"
+      },
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "name",
+        "type": "CharField",
+        "verbose_name": "Tên thương hiệu",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "slug",
+        "type": "SlugField",
+        "verbose_name": "slug",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "logo_url",
+        "type": "CharField",
+        "verbose_name": "logo url",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "is_featured",
+        "type": "BooleanField",
+        "verbose_name": "is featured",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "categories",
+        "type": "ManyToManyField",
+        "verbose_name": "categories",
+        "null": false,
+        "blank": true,
+        "related_to": "Category"
+      }
+    ]
+  },
+  "products_product": {
+    "app": "products",
+    "model": "Product",
+    "verbose_name": "Sản phẩm",
+    "fields": [
+      {
+        "name": "reviews",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "ProductReview"
+      },
+      {
+        "name": "flash_sales",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "FlashSaleItem"
+      },
+      {
+        "name": "cartitem",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "CartItem"
+      },
+      {
+        "name": "orderitem",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "OrderItem"
+      },
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "category",
+        "type": "ForeignKey",
+        "verbose_name": "category",
+        "null": false,
+        "blank": false,
+        "related_to": "Category"
+      },
+      {
+        "name": "brand",
+        "type": "ForeignKey",
+        "verbose_name": "brand",
+        "null": true,
+        "blank": true,
+        "related_to": "Brand"
+      },
+      {
+        "name": "name",
+        "type": "CharField",
+        "verbose_name": "Tên sản phẩm",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "slug",
+        "type": "SlugField",
+        "verbose_name": "slug",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "sku",
+        "type": "CharField",
+        "verbose_name": "Mã SKU",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "main_image_url",
+        "type": "CharField",
+        "verbose_name": "main image url",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "price",
+        "type": "DecimalField",
+        "verbose_name": "Giá bán niêm yết",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "original_price",
+        "type": "DecimalField",
+        "verbose_name": "Giá gốc thị trường",
+        "null": true,
+        "blank": true
+      },
+      {
+        "name": "stock",
+        "type": "PositiveIntegerField",
+        "verbose_name": "Số lượng tồn kho",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "sold_count",
+        "type": "PositiveIntegerField",
+        "verbose_name": "Số lượng đã bán",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_fast_delivery_1h",
+        "type": "BooleanField",
+        "verbose_name": "Giao 1h",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "gift_description",
+        "type": "CharField",
+        "verbose_name": "Quà tặng kèm",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "age_group",
+        "type": "CharField",
+        "verbose_name": "Độ tuổi phù hợp",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "origin",
+        "type": "CharField",
+        "verbose_name": "Xuất xứ",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "description",
+        "type": "TextField",
+        "verbose_name": "Chi tiết sản phẩm",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "rating",
+        "type": "DecimalField",
+        "verbose_name": "Đánh giá sao",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "review_count",
+        "type": "PositiveIntegerField",
+        "verbose_name": "Lượt đánh giá",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_featured",
+        "type": "BooleanField",
+        "verbose_name": "is featured",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_active",
+        "type": "BooleanField",
+        "verbose_name": "is active",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "created_at",
+        "type": "DateTimeField",
+        "verbose_name": "created at",
+        "null": false,
+        "blank": true
+      }
+    ]
+  },
+  "products_productreview": {
+    "app": "products",
+    "model": "ProductReview",
+    "verbose_name": "Đánh giá & Feedback",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "product",
+        "type": "ForeignKey",
+        "verbose_name": "Sản phẩm",
+        "null": false,
+        "blank": false,
+        "related_to": "Product"
+      },
+      {
+        "name": "user",
+        "type": "ForeignKey",
+        "verbose_name": "Khách hàng",
+        "null": false,
+        "blank": false,
+        "related_to": "User"
+      },
+      {
+        "name": "rating",
+        "type": "PositiveIntegerField",
+        "verbose_name": "Số sao (1-5)",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "comment",
+        "type": "TextField",
+        "verbose_name": "Nội dung đánh giá / Feedback",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_approved",
+        "type": "BooleanField",
+        "verbose_name": "Duyệt hiển thị",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "created_at",
+        "type": "DateTimeField",
+        "verbose_name": "created at",
+        "null": false,
+        "blank": true
+      }
+    ]
+  },
+  "promotions_banner": {
+    "app": "promotions",
+    "model": "Banner",
+    "verbose_name": "Banner quảng cáo",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "title",
+        "type": "CharField",
+        "verbose_name": "Tiêu đề Banner",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "image",
+        "type": "FileField",
+        "verbose_name": "image",
+        "null": true,
+        "blank": true
+      },
+      {
+        "name": "image_url",
+        "type": "CharField",
+        "verbose_name": "image url",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "link_url",
+        "type": "CharField",
+        "verbose_name": "Đường dẫn đích",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "position",
+        "type": "CharField",
+        "verbose_name": "position",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "order",
+        "type": "PositiveIntegerField",
+        "verbose_name": "order",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_active",
+        "type": "BooleanField",
+        "verbose_name": "is active",
+        "null": false,
+        "blank": false
+      }
+    ]
+  },
+  "promotions_flashsale": {
+    "app": "promotions",
+    "model": "FlashSale",
+    "verbose_name": "Flash Sale",
+    "fields": [
+      {
+        "name": "items",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "FlashSaleItem"
+      },
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "title",
+        "type": "CharField",
+        "verbose_name": "Tiêu đề Flash Sale",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "end_time",
+        "type": "DateTimeField",
+        "verbose_name": "Thời gian kết thúc (Countdown)",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_active",
+        "type": "BooleanField",
+        "verbose_name": "Kích hoạt",
+        "null": false,
+        "blank": false
+      }
+    ]
+  },
+  "promotions_flashsaleitem": {
+    "app": "promotions",
+    "model": "FlashSaleItem",
+    "verbose_name": "flash sale item",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "flash_sale",
+        "type": "ForeignKey",
+        "verbose_name": "flash sale",
+        "null": false,
+        "blank": false,
+        "related_to": "FlashSale"
+      },
+      {
+        "name": "product",
+        "type": "ForeignKey",
+        "verbose_name": "product",
+        "null": false,
+        "blank": false,
+        "related_to": "Product"
+      },
+      {
+        "name": "flash_price",
+        "type": "DecimalField",
+        "verbose_name": "Giá sốc Flash Sale",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "quantity_limit",
+        "type": "PositiveIntegerField",
+        "verbose_name": "Số lượng bán",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "quantity_sold",
+        "type": "PositiveIntegerField",
+        "verbose_name": "Đã bán",
+        "null": false,
+        "blank": false
+      }
+    ]
+  },
+  "promotions_voucher": {
+    "app": "promotions",
+    "model": "Voucher",
+    "verbose_name": "voucher",
+    "fields": [
+      {
+        "name": "cart",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "Cart"
+      },
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "code",
+        "type": "CharField",
+        "verbose_name": "Mã giảm giá",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "discount_amount",
+        "type": "DecimalField",
+        "verbose_name": "Số tiền giảm (VNĐ)",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "discount_percent",
+        "type": "PositiveIntegerField",
+        "verbose_name": "Hoặc giảm theo % (0-100)",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "min_order_value",
+        "type": "DecimalField",
+        "verbose_name": "Đơn tối thiểu (VNĐ)",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_active",
+        "type": "BooleanField",
+        "verbose_name": "is active",
+        "null": false,
+        "blank": false
+      }
+    ]
+  },
+  "orders_cart": {
+    "app": "orders",
+    "model": "Cart",
+    "verbose_name": "cart",
+    "fields": [
+      {
+        "name": "items",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "CartItem"
+      },
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "user",
+        "type": "ForeignKey",
+        "verbose_name": "user",
+        "null": true,
+        "blank": true,
+        "related_to": "User"
+      },
+      {
+        "name": "session_key",
+        "type": "CharField",
+        "verbose_name": "session key",
+        "null": true,
+        "blank": true
+      },
+      {
+        "name": "voucher",
+        "type": "ForeignKey",
+        "verbose_name": "voucher",
+        "null": true,
+        "blank": true,
+        "related_to": "Voucher"
+      },
+      {
+        "name": "created_at",
+        "type": "DateTimeField",
+        "verbose_name": "created at",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "updated_at",
+        "type": "DateTimeField",
+        "verbose_name": "updated at",
+        "null": false,
+        "blank": true
+      }
+    ]
+  },
+  "orders_cartitem": {
+    "app": "orders",
+    "model": "CartItem",
+    "verbose_name": "cart item",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "cart",
+        "type": "ForeignKey",
+        "verbose_name": "cart",
+        "null": false,
+        "blank": false,
+        "related_to": "Cart"
+      },
+      {
+        "name": "product",
+        "type": "ForeignKey",
+        "verbose_name": "product",
+        "null": false,
+        "blank": false,
+        "related_to": "Product"
+      },
+      {
+        "name": "quantity",
+        "type": "PositiveIntegerField",
+        "verbose_name": "quantity",
+        "null": false,
+        "blank": false
+      }
+    ]
+  },
+  "orders_order": {
+    "app": "orders",
+    "model": "Order",
+    "verbose_name": "Đơn hàng",
+    "fields": [
+      {
+        "name": "items",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "OrderItem"
+      },
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "order_code",
+        "type": "CharField",
+        "verbose_name": "Mã đơn",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "user",
+        "type": "ForeignKey",
+        "verbose_name": "user",
+        "null": true,
+        "blank": true,
+        "related_to": "User"
+      },
+      {
+        "name": "staff_handler",
+        "type": "ForeignKey",
+        "verbose_name": "Nhân viên xử lý",
+        "null": true,
+        "blank": true,
+        "related_to": "User"
+      },
+      {
+        "name": "customer_name",
+        "type": "CharField",
+        "verbose_name": "Người nhận",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "customer_phone",
+        "type": "CharField",
+        "verbose_name": "Số điện thoại",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "shipping_address",
+        "type": "CharField",
+        "verbose_name": "Địa chỉ",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "city",
+        "type": "CharField",
+        "verbose_name": "city",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "district",
+        "type": "CharField",
+        "verbose_name": "district",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "note",
+        "type": "TextField",
+        "verbose_name": "note",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "shipping_method",
+        "type": "CharField",
+        "verbose_name": "shipping method",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "payment_method",
+        "type": "CharField",
+        "verbose_name": "payment method",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "shipping_fee",
+        "type": "DecimalField",
+        "verbose_name": "shipping fee",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "discount_amount",
+        "type": "DecimalField",
+        "verbose_name": "discount amount",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "total_amount",
+        "type": "DecimalField",
+        "verbose_name": "total amount",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "status",
+        "type": "CharField",
+        "verbose_name": "status",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "created_at",
+        "type": "DateTimeField",
+        "verbose_name": "created at",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "updated_at",
+        "type": "DateTimeField",
+        "verbose_name": "updated at",
+        "null": false,
+        "blank": true
+      }
+    ]
+  },
+  "orders_orderitem": {
+    "app": "orders",
+    "model": "OrderItem",
+    "verbose_name": "order item",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "order",
+        "type": "ForeignKey",
+        "verbose_name": "order",
+        "null": false,
+        "blank": false,
+        "related_to": "Order"
+      },
+      {
+        "name": "product",
+        "type": "ForeignKey",
+        "verbose_name": "product",
+        "null": true,
+        "blank": false,
+        "related_to": "Product"
+      },
+      {
+        "name": "product_name",
+        "type": "CharField",
+        "verbose_name": "product name",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "price",
+        "type": "DecimalField",
+        "verbose_name": "price",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "quantity",
+        "type": "PositiveIntegerField",
+        "verbose_name": "quantity",
+        "null": false,
+        "blank": false
+      }
+    ]
+  },
+  "stores_storelocation": {
+    "app": "stores",
+    "model": "StoreLocation",
+    "verbose_name": "Siêu thị Con Cưng",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "name",
+        "type": "CharField",
+        "verbose_name": "Tên siêu thị",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "province",
+        "type": "CharField",
+        "verbose_name": "Tỉnh / Thành phố",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "district",
+        "type": "CharField",
+        "verbose_name": "Quận / Huyện",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "address",
+        "type": "CharField",
+        "verbose_name": "Địa chỉ cụ thể",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "phone",
+        "type": "CharField",
+        "verbose_name": "Số điện thoại",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "opening_hours",
+        "type": "CharField",
+        "verbose_name": "Giờ mở cửa",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_active",
+        "type": "BooleanField",
+        "verbose_name": "is active",
+        "null": false,
+        "blank": false
+      }
+    ]
+  },
+  "chat_chatsession": {
+    "app": "chat",
+    "model": "ChatSession",
+    "verbose_name": "chat session",
+    "fields": [
+      {
+        "name": "messages",
+        "type": "ForeignKey",
+        "verbose_name": "",
+        "null": true,
+        "blank": false,
+        "related_to": "ChatMessage"
+      },
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "customer",
+        "type": "ForeignKey",
+        "verbose_name": "customer",
+        "null": true,
+        "blank": true,
+        "related_to": "User"
+      },
+      {
+        "name": "customer_name",
+        "type": "CharField",
+        "verbose_name": "customer name",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "session_key",
+        "type": "CharField",
+        "verbose_name": "session key",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "staff",
+        "type": "ForeignKey",
+        "verbose_name": "staff",
+        "null": true,
+        "blank": true,
+        "related_to": "User"
+      },
+      {
+        "name": "chat_mode",
+        "type": "CharField",
+        "verbose_name": "Chế độ Chat",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_resolved",
+        "type": "BooleanField",
+        "verbose_name": "is resolved",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "created_at",
+        "type": "DateTimeField",
+        "verbose_name": "created at",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "updated_at",
+        "type": "DateTimeField",
+        "verbose_name": "updated at",
+        "null": false,
+        "blank": true
+      }
+    ]
+  },
+  "chat_chatmessage": {
+    "app": "chat",
+    "model": "ChatMessage",
+    "verbose_name": "chat message",
+    "fields": [
+      {
+        "name": "id",
+        "type": "BigAutoField",
+        "verbose_name": "ID",
+        "null": false,
+        "blank": true
+      },
+      {
+        "name": "session",
+        "type": "ForeignKey",
+        "verbose_name": "session",
+        "null": false,
+        "blank": false,
+        "related_to": "ChatSession"
+      },
+      {
+        "name": "sender",
+        "type": "ForeignKey",
+        "verbose_name": "sender",
+        "null": true,
+        "blank": true,
+        "related_to": "User"
+      },
+      {
+        "name": "sender_name",
+        "type": "CharField",
+        "verbose_name": "sender name",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_staff",
+        "type": "BooleanField",
+        "verbose_name": "is staff",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "is_ai",
+        "type": "BooleanField",
+        "verbose_name": "Tin nhắn từ AI",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "message",
+        "type": "TextField",
+        "verbose_name": "message",
+        "null": false,
+        "blank": false
+      },
+      {
+        "name": "suggested_products_json",
+        "type": "JSONField",
+        "verbose_name": "Danh sách SP gợi ý (JSON)",
+        "null": true,
+        "blank": true
+      },
+      {
+        "name": "created_at",
+        "type": "DateTimeField",
+        "verbose_name": "created at",
+        "null": false,
+        "blank": true
+      }
+    ]
+  }
+}
