@@ -1,0 +1,10 @@
+CREATE TABLE accounts_userprofile (id SERIAL PRIMARY KEY, user_id INTEGER, phone VARCHAR(15), avatar VARCHAR(255), gender VARCHAR(10), birthday DATE);
+CREATE TABLE products_category (id SERIAL PRIMARY KEY, name VARCHAR(255), slug VARCHAR(255), parent_id INTEGER);
+CREATE TABLE products_brand (id SERIAL PRIMARY KEY, name VARCHAR(255), logo VARCHAR(255));
+CREATE TABLE products_product (id SERIAL PRIMARY KEY, name VARCHAR(255), slug VARCHAR(255), price DECIMAL(10,2), stock INTEGER, category_id INTEGER, brand_id INTEGER, image VARCHAR(255));
+CREATE TABLE orders_cart (id SERIAL PRIMARY KEY, user_id INTEGER, created_at TIMESTAMP);
+CREATE TABLE orders_order (id SERIAL PRIMARY KEY, user_id INTEGER, status VARCHAR(50), total DECIMAL(10,2), created_at TIMESTAMP);
+CREATE TABLE promotions_flashsale (id SERIAL PRIMARY KEY, name VARCHAR(255), start_time TIMESTAMP, end_time TIMESTAMP);
+CREATE TABLE promotions_voucher (id SERIAL PRIMARY KEY, code VARCHAR(50), discount DECIMAL(5,2), expires_at TIMESTAMP);
+CREATE TABLE stores_storelocation (id SERIAL PRIMARY KEY, name VARCHAR(255), address TEXT, province VARCHAR(100), phone VARCHAR(15));
+CREATE TABLE chat_chatsession (id SERIAL PRIMARY KEY, user_id INTEGER, created_at TIMESTAMP);
