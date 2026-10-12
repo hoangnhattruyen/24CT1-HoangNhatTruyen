@@ -2,6 +2,20 @@
 
 Dự án website thương mại điện tử chuyên ngành Mẹ & Bé, mô phỏng giao diện, chức năng và bố cục của **Concung.com**.
 
+## Kiến Trúc Hệ Thống & Cơ Sở Dữ Liệu (System Architecture)
+* **Frontend Layer**: Django Templates, HTML5, CSS3, JavaScript.
+* **Backend Layer**: Django Web Framework (Python).
+* **Database Layer**: **Supabase (PostgreSQL Cloud Database)**
+  - Toàn bộ cơ sở dữ liệu của ứng dụng được lưu trữ và xử lý trực tiếp trên nền tảng đám mây **Supabase PostgreSQL**.
+  - Các phân hệ dữ liệu chính trên **Supabase**:
+    - **Supabase Accounts & Auth**: Quản lý người dùng, phân quyền, số điện thoại (`auth_user`, `accounts_userprofile`, `accounts_address`).
+    - **Supabase Product Catalog**: Quản lý danh mục, thương hiệu, sản phẩm (`products_product`, `products_category`, `products_brand`).
+    - **Supabase Orders & Cart**: Quản lý giỏ hàng và đơn hàng (`orders_cart`, `orders_order`, `orders_orderitem`).
+    - **Supabase Promotions**: Quản lý chương trình Flash Sale và Voucher (`promotions_flashsale`, `promotions_voucher`).
+    - **Supabase Store Operations**: Quản lý chuỗi siêu thị (`stores_storelocation`).
+    - **Supabase Chat Support**: Quản lý phiên chat tư vấn trực tuyến (`chat_chatsession`, `chat_chatmessage`).
+
+
 ## Bảng Màu Giao Diện (Tone & Design System)
 * **Màu chủ đạo (Primary Accent)**: `#FF82AB` (Hồng pastel ngọt ngào cho Mẹ & Bé)
 * **Màu nền trang (Background)**: `#FFE7BA` (Vàng kem ấm áp, dễ chịu)

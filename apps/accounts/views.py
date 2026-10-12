@@ -11,11 +11,13 @@ def register_view(request):
     if request.method == 'POST':
         u = request.POST.get('username')
         p = request.POST.get('password')
-        phone = request.POST.get('phone', '')
+        phone = request.POST.get('phone', '').strip()
         name = request.POST.get('full_name', '')
         
         if User.objects.filter(username=u).exists():
             messages.error(request, 'Tên đăng nhập đã tồn tại!')
+        elif phone and UserProfile.objects.filter(phone=phone).exists():
+            messages.error(request, f'Số điện thoại "{phone}" đã được sử dụng!')
         else:
             user = User.objects.create_user(username=u, password=p, first_name=name)
             UserProfile.objects.create(user=user, phone=phone, role='CUSTOMER')

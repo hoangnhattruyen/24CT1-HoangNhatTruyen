@@ -68,14 +68,28 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ecommerce_core.wsgi.application'
 
 SUPABASE_DB_URL = os.getenv('DATABASE_URL')
-if SUPABASE_DB_URL and SUPABASE_DB_URL.startswith(('postgresql://', 'postgres://')) and dj_database_url:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=SUPABASE_DB_URL,
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
+if SUPABASE_DB_URL and SUPABASE_DB_URL.startswith(('postgresql://', 'postgres://')):
+    if dj_database_url:
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=SUPABASE_DB_URL,
+                conn_max_age=600,
+                ssl_require=True
+            )
+        }
+    else:
+        from urllib.parse import urlparse
+        u = urlparse(SUPABASE_DB_URL)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': u.path[1:],
+                'USER': u.username,
+                'PASSWORD': u.password,
+                'HOST': u.hostname,
+                'PORT': u.port or 5432,
+            }
+        }
 else:
     DATABASES = {
         'default': {
