@@ -1,0 +1,263 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="qr-payment">
+    <div class="qr-header">
+        <h2>Thanh toán bằng mã QR</h2>
+        <p>Hoàn tất thanh toán để đơn hàng được xử lý nhé!</p>
+    </div>
+
+    <div class="order-info">
+        <p>Mã đơn hàng</p>
+        <strong>{{ order.order_code }}</strong>
+    </div>
+
+    <div class="amount">
+        <p>Số tiền cần thanh toán</p>
+        <h2>{{ order.total_amount|floatformat:0 }} VNĐ</h2>
+    </div>
+
+    {% if order.payment_status == 'PAID' %}
+        <div class="payment-status paid">
+            <span>✓</span>
+            <div>
+                <strong>Thanh toán thành công</strong>
+                <p>Đơn hàng đã được xác nhận thanh toán.</p>
+            </div>
+        </div>
+    {% else %}
+        <div class="payment-status pending">
+            <span>!</span>
+            <div>
+                <strong>Đang chờ thanh toán</strong>
+                <p>Vui lòng chuyển khoản và chờ Admin xác nhận.</p>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="qr-box">
+        <h3>Quét mã QR để chuyển khoản</h3>
+
+        <img src="{% static 'images/qr.png' %}"
+             alt="Mã QR thanh toán"
+             class="qr-image">
+
+        <p class="qr-note">
+            Sử dụng ứng dụng ngân hàng để quét mã QR.
+        </p>
+    </div>
+
+    <div class="transfer-info">
+        <h3>Thông tin chuyển khoản</h3>
+
+        <div class="info-row">
+            <span>Số tiền</span>
+            <strong>{{ order.total_amount|floatformat:0 }} VNĐ</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Nội dung chuyển khoản</span>
+            <strong>THANHTOAN {{ order.order_code }}</strong>
+        </div>
+    </div>
+
+    <div class="payment-warning">
+        <p>
+            Lưu ý: Vui lòng chuyển đúng số tiền và nội dung chuyển khoản.
+            Đơn hàng chỉ được xác nhận sau khi Admin kiểm tra và xác nhận
+            đã nhận được tiền.
+        </p>
+    </div>
+
+    <div class="qr-actions">
+        <a href="{% url 'orders:order_tracking' order.order_code %}"
+           class="btn-track">
+            Theo dõi đơn hàng
+        </a>
+
+        <a href="{% url 'orders:order_history' %}"
+           class="btn-history">
+            Lịch sử đơn hàng
+        </a>
+    </div>
+</div>
+
+<style>
+.qr-payment {
+    max-width: 520px;
+    margin: 45px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    font-family: Arial, sans-serif;
+}
+
+.qr-header {
+    text-align: center;
+}
+
+.qr-header h2 {
+    color: #e87591;
+    margin-bottom: 8px;
+}
+
+.qr-header p {
+    color: #777;
+    font-size: 14px;
+}
+
+.order-info,
+.amount {
+    text-align: center;
+    padding: 15px;
+    margin-top: 18px;
+    background: #fff5f7;
+    border-radius: 12px;
+}
+
+.order-info p,
+.amount p {
+    color: #777;
+    margin-bottom: 7px;
+}
+
+.order-info strong {
+    color: #333;
+    font-size: 18px;
+}
+
+.amount h2 {
+    color: #e87591;
+    margin: 5px 0;
+}
+
+.payment-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    margin-top: 18px;
+    border-radius: 12px;
+}
+
+.payment-status span {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.payment-status p {
+    margin: 5px 0 0;
+    font-size: 13px;
+}
+
+.pending {
+    background: #fff7e6;
+    color: #b7791f;
+}
+
+.paid {
+    background: #e9f8ef;
+    color: #218653;
+}
+
+.qr-box {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.qr-box h3,
+.transfer-info h3 {
+    color: #444;
+    font-size: 17px;
+}
+
+.qr-image {
+    display: block;
+    width: 280px;
+    max-width: 100%;
+    height: auto;
+    margin: 20px auto;
+    border: 1px solid #eee;
+    border-radius: 12px;
+}
+
+.qr-note {
+    color: #888;
+    font-size: 13px;
+}
+
+.transfer-info {
+    padding: 18px;
+    margin-top: 20px;
+    background: #fafafa;
+    border-radius: 12px;
+}
+
+.info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row span {
+    color: #888;
+    font-size: 13px;
+}
+
+.info-row strong {
+    color: #e87591;
+    word-break: break-word;
+}
+
+.payment-warning {
+    margin-top: 18px;
+    padding: 12px;
+    background: #fff5f5;
+    border-radius: 10px;
+    color: #a45b64;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.qr-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.qr-actions a {
+    display: block;
+    padding: 13px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: bold;
+}
+
+.btn-track {
+    background: #e87591;
+    color: white;
+}
+
+.btn-history {
+    border: 1px solid #e87591;
+    color: #e87591;
+}
+
+.qr-actions a:hover {
+    opacity: 0.85;
+}
+</style>
+
+{% endblock %}

@@ -1,7 +1,9 @@
 import uuid
+from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from apps.products.models import Product
 from apps.promotions.models import Voucher
@@ -24,19 +26,38 @@ def cart_view(request):
     cart = get_or_create_cart(request)
     return render(request, 'pages/cart.html', {'cart': cart})
 
+@csrf_exempt
 def add_to_cart_view(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Yêu cầu không hợp lệ.'}, status=405)
+
     product_id = request.POST.get('product_id')
-    quantity = int(request.POST.get('quantity', 1))
+    quantity_raw = request.POST.get('quantity', '1')
+
+    try:
+        quantity = int(quantity_raw)
+    except (TypeError, ValueError):
+        return JsonResponse({
+            'success': False,
+            'message': 'Số lượng không hợp lệ. Vui lòng nhập số nguyên dương.'
+        }, status=400)
+
+    if not product_id:
+        return JsonResponse({'success': False, 'message': 'Thiếu thông tin sản phẩm.'}, status=400)
+
+    if quantity <= 0:
+        return JsonResponse({'success': False, 'message': 'Số lượng phải lớn hơn 0.'}, status=400)
+
     product = get_object_or_404(Product, id=product_id, is_active=True)
     cart = get_or_create_cart(request)
-    
+
     item, created = CartItem.objects.get_or_create(cart=cart, product=product)
     if not created:
         item.quantity += quantity
     else:
         item.quantity = quantity
     item.save()
-    
+
     return JsonResponse({
         'success': True,
         'message': f'Đã thêm {product.name} vào giỏ hàng!',
@@ -80,14 +101,39 @@ def apply_voucher_view(request):
         messages.error(request, 'Mã giảm giá không hợp lệ hoặc đã hết hạn!')
     return redirect('orders:cart')
 
+
+def qr_payment_view(request, order_code):
+    order = get_object_or_404(
+        Order,
+        order_code=order_code,
+        payment_method='QR'
+    )
+
+    return render(
+        request,
+        'pages/qr_payment.html',
+        {
+            'order': order
+        }
+    )
+
+
 def checkout_view(request):
     cart = get_or_create_cart(request)
+
     if cart.items.count() == 0:
         return redirect('orders:cart')
-        
-    user_addresses = request.user.addresses.all() if request.user.is_authenticated else []
-    default_address = user_addresses.filter(is_default=True).first()
-    
+
+    user_addresses = (
+        list(request.user.addresses.all())
+        if request.user.is_authenticated else []
+    )
+
+    default_address = next(
+        (address for address in user_addresses if address.is_default),
+        None
+    )
+
     if request.method == 'POST':
         name = request.POST.get('customer_name')
         phone = request.POST.get('customer_phone')
@@ -97,48 +143,96 @@ def checkout_view(request):
         shipping_method = request.POST.get('shipping_method', 'FAST_1H')
         payment_method = request.POST.get('payment_method', 'COD')
         note = request.POST.get('note', '')
-        
-        shipping_fee = 0 if cart.total_price >= 249000 else 25000
-        
-        order = Order.objects.create(
-            order_code=f"CC{uuid.uuid4().hex[:8].upper()}",
-            user=request.user if request.user.is_authenticated else None,
-            customer_name=name,
-            customer_phone=phone,
-            shipping_address=address,
-            city=city,
-            district=district,
-            shipping_method=shipping_method,
-            payment_method=payment_method,
-            shipping_fee=shipping_fee,
-            discount_amount=cart.discount_amount,
-            total_amount=cart.total_price + shipping_fee,
-            note=note
-        )
-        
-        for item in cart.items.all():
-            OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                product_name=item.product.name,
-                price=item.product.price,
-                quantity=item.quantity
+
+        # Chỉ chấp nhận các phương thức đã triển khai
+        if payment_method not in ['COD', 'QR']:
+            messages.error(
+                request,
+                'Phương thức thanh toán không hợp lệ.'
             )
-            # Trừ tồn kho & cộng số lượng đã bán
-            item.product.stock = max(item.product.stock - item.quantity, 0)
-            item.product.sold_count += item.quantity
-            item.product.save()
-            
-        cart.items.all().delete()
-        cart.voucher = None
-        cart.save()
-        return redirect('orders:order_success', order_code=order.order_code)
-        
-    return render(request, 'pages/checkout.html', {
-        'cart': cart,
-        'user_addresses': user_addresses,
-        'default_address': default_address,
-    })
+            return redirect('orders:checkout')
+
+        # Tính phí vận chuyển
+        shipping_fee = (
+            0 if cart.total_price >= 249000 else 25000
+        )
+
+        with transaction.atomic():
+
+            # Tạo đơn hàng
+            order = Order.objects.create(
+                order_code=f"CC{uuid.uuid4().hex[:8].upper()}",
+                user=(
+                    request.user
+                    if request.user.is_authenticated else None
+                ),
+                customer_name=name,
+                customer_phone=phone,
+                shipping_address=address,
+                city=city,
+                district=district,
+                shipping_method=shipping_method,
+                payment_method=payment_method,
+                payment_status='UNPAID',
+                shipping_fee=shipping_fee,
+                discount_amount=cart.discount_amount,
+                total_amount=cart.total_price + shipping_fee,
+                note=note,
+                status='PENDING'
+            )
+
+            # Tạo chi tiết đơn hàng
+            for item in cart.items.select_related('product').all():
+
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    product_name=item.product.name,
+                    price=item.product.price,
+                    quantity=item.quantity
+                )
+
+                # COD giữ nguyên cách trừ kho hiện tại.
+                # QR chỉ trừ kho sau khi Admin xác nhận thanh toán.
+                if payment_method == 'COD':
+                    item.product.stock = max(
+                        item.product.stock - item.quantity,
+                        0
+                    )
+
+                    item.product.sold_count += item.quantity
+
+                    item.product.save(
+                        update_fields=['stock', 'sold_count']
+                    )
+
+            # Xóa giỏ hàng sau khi tạo đơn thành công
+            cart.items.all().delete()
+            cart.voucher = None
+            cart.save()
+
+        # Chuyển trang theo phương thức thanh toán
+        if payment_method == 'QR':
+            return redirect(
+                'orders:qr_payment',
+                order_code=order.order_code
+            )
+
+        return redirect(
+            'orders:order_success',
+            order_code=order.order_code
+        )
+
+    return render(
+        request,
+        'pages/checkout.html',
+        {
+            'cart': cart,
+            'user_addresses': user_addresses,
+            'default_address': default_address,
+        }
+    )
+
 
 def order_success_view(request, order_code):
     order = get_object_or_404(Order, order_code=order_code)

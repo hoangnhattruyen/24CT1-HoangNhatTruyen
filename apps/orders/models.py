@@ -42,6 +42,7 @@ class CartItem(models.Model):
     def subtotal(self):
         return self.product.price * self.quantity
 
+
 class Order(models.Model):
     STATUS_CHOICES = [
         ('PENDING', 'Chờ xác nhận'),
@@ -50,35 +51,126 @@ class Order(models.Model):
         ('DELIVERED', 'Đã giao hàng thành công'),
         ('CANCELLED', 'Đã hủy'),
     ]
+
     SHIPPING_CHOICES = [
         ('FAST_1H', 'Giao Siêu Tốc 1h'),
         ('STANDARD', 'Giao tiêu chuẩn (1-2 ngày)'),
     ]
+
     PAYMENT_CHOICES = [
         ('COD', 'Thanh toán tiền mặt (COD)'),
+        ('QR', 'Thanh toán chuyển khoản bằng mã QR'),
         ('VNPAY', 'Ví VNPAY / Ngân hàng QR'),
         ('MOMO', 'Ví MoMo'),
     ]
-    order_code = models.CharField(max_length=30, unique=True, verbose_name="Mã đơn")
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
-    staff_handler = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='handled_orders', verbose_name="Nhân viên xử lý")
-    
+
+    # Trạng thái thanh toán
+    PAYMENT_STATUS_CHOICES = [
+        ('UNPAID', 'Chờ thanh toán'),
+        ('PAID', 'Đã thanh toán'),
+    ]
+
+    order_code = models.CharField(
+        max_length=30,
+        unique=True,
+        verbose_name="Mã đơn"
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders'
+    )
+
+    staff_handler = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='handled_orders',
+        verbose_name="Nhân viên xử lý"
+    )
+
     customer_name = models.CharField(max_length=150, verbose_name="Người nhận")
     customer_phone = models.CharField(max_length=20, verbose_name="Số điện thoại")
     shipping_address = models.CharField(max_length=300, verbose_name="Địa chỉ")
     city = models.CharField(max_length=100, default="TP. Hồ Chí Minh")
     district = models.CharField(max_length=100, default="Quận 1")
     note = models.TextField(blank=True)
-    
-    shipping_method = models.CharField(max_length=30, choices=SHIPPING_CHOICES, default='FAST_1H')
-    payment_method = models.CharField(max_length=30, choices=PAYMENT_CHOICES, default='COD')
-    shipping_fee = models.DecimalField(max_digits=10, decimal_places=0, default=0)
-    discount_amount = models.DecimalField(max_digits=10, decimal_places=0, default=0)
-    total_amount = models.DecimalField(max_digits=12, decimal_places=0)
-    
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='PENDING')
+
+    shipping_method = models.CharField(
+        max_length=30,
+        choices=SHIPPING_CHOICES,
+        default='FAST_1H'
+    )
+
+    payment_method = models.CharField(
+        max_length=30,
+        choices=PAYMENT_CHOICES,
+        default='COD'
+    )
+
+    # Trạng thái thanh toán độc lập với trạng thái đơn hàng
+    payment_status = models.CharField(
+        max_length=20,
+        choices=PAYMENT_STATUS_CHOICES,
+        default='UNPAID',
+        verbose_name="Trạng thái thanh toán"
+    )
+
+    # Thời điểm Admin xác nhận đã nhận tiền
+    payment_confirmed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Thời gian xác nhận thanh toán"
+    )
+
+    # Admin hoặc nhân viên xác nhận thanh toán
+    payment_confirmed_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='confirmed_payments',
+        verbose_name="Người xác nhận thanh toán"
+    )
+
+    shipping_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        default=0
+    )
+
+    discount_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        default=0
+    )
+
+    total_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=0
+    )
+
+    status = models.CharField(
+        max_length=30,
+        choices=STATUS_CHOICES,
+        default='PENDING'
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Đơn hàng"
+        verbose_name_plural = "Đơn hàng"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"#{self.order_code} - {self.customer_name} ({self.get_status_display()})"
+
 
     class Meta:
         verbose_name = "Đơn hàng"

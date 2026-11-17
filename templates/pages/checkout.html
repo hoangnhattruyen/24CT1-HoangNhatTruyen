@@ -56,17 +56,29 @@
                     </label>
                 </div>
 
-                <h3 style="font-size:16px; font-weight:800; color:var(--primary-hover); margin-top:10px;">3. Phương thức thanh toán</h3>
+                <h3 style="font-size:16px; font-weight:800; color:var(--primary-hover); margin-top:10px;">
+                    3. Phương thức thanh toán
+                </h3>
+
                 <div style="display:flex; flex-direction:column; gap:8px;">
+
                     <label style="display:flex; align-items:center; gap:8px; background:#F7FAFC; padding:12px; border-radius:8px; font-weight:700; cursor:pointer;">
-                        <input type="radio" name="payment_method" value="COD" checked>
+                        <input type="radio"
+                            name="payment_method"
+                            value="COD"
+                            checked>
                         <span>💵 Thanh toán tiền mặt khi nhận hàng (COD)</span>
                     </label>
-                    <label style="display:flex; align-items:center; gap:8px; background:#F7FAFC; padding:12px; border-radius:8px; font-weight:700; cursor:pointer;">
-                        <input type="radio" name="payment_method" value="VNPAY">
-                        <span>💳 VNPAY / Thẻ ATM / QR Pay</span>
+
+                    <label style="display:flex; align-items:center; gap:8px; background:var(--primary-light); padding:12px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        <input type="radio"
+                            name="payment_method"
+                            value="QR">
+                        <span>📱 Thanh toán chuyển khoản bằng mã QR</span>
                     </label>
+
                 </div>
+
             </div>
 
             <!-- Tóm tắt đơn hàng -->

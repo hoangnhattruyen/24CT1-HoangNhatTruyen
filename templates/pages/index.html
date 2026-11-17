@@ -51,7 +51,9 @@
                     </a>
 
                     <div>
-                        <h3 class="product-name">{{ item.product.name }}</h3>
+                        <a href="{% url 'products:product_detail' item.product.slug %}">
+                            <h3 class="product-name">{{ item.product.name }}</h3>
+                        </a>
                         <div class="product-pricing">
                             <span class="current-price">{{ item.flash_price|intcomma }}₫</span>
                             <span class="old-price">{{ item.product.price|intcomma }}₫</span>
@@ -64,7 +66,7 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn-add-cart-fast btn-add-to-cart" data-product-id="{{ item.product.id }}">
+                    <button type="button" class="btn-add-cart-fast btn-add-to-cart" data-product-id="{{ item.product.id }}" data-buy-now="true">
                         ⚡ Mua Ngay
                     </button>
                 </div>
