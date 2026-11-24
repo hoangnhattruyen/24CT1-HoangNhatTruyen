@@ -10,11 +10,21 @@
             <h1 class="section-box-title" style="font-size:20px !important;">📊 TRANG QUẢN TRỊ TỔNG THỂ (ADMIN PORTAL)</h1>
             <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Báo cáo kinh doanh, quản lý nhân sự, kiểm soát tồn kho và phản hồi khách hàng.</p>
         </div>
-        <div>
-            <a href="{% url 'dashboard:admin_staff_manage' %}" class="btn-checkout-primary" style="margin-top:0; padding:10px 20px; width:auto; font-size:14px;">
+        
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="{% url 'products:admin_product_list' %}"
+            class="btn-checkout-primary"
+            style="margin-top:0; padding:10px 20px; width:auto; font-size:14px; background:#3182CE;">
+                📦 Quản Lý Sản Phẩm
+            </a>
+
+            <a href="{% url 'dashboard:admin_staff_manage' %}"
+            class="btn-checkout-primary"
+            style="margin-top:0; padding:10px 20px; width:auto; font-size:14px;">
                 👥 Quản Lý & Tạo Tài Khoản Nhân Viên
             </a>
         </div>
+
     </div>
 </div>
 

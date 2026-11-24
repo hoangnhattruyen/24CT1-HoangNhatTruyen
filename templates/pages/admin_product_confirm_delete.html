@@ -1,0 +1,121 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Xóa sản phẩm - M&B Shop{% endblock %}
+
+{% block content %}
+<style>
+    .delete-container {
+        max-width: 550px;
+        margin: 60px auto;
+        padding: 30px;
+        background: white;
+        border: 1px solid #f1dce7;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        text-align: center;
+    }
+
+    .delete-icon {
+        font-size: 55px;
+        margin-bottom: 15px;
+    }
+
+    .delete-container h2 {
+        color: #dc3545;
+        font-size: 23px;
+        margin-bottom: 15px;
+    }
+
+    .delete-container p {
+        color: #666;
+        line-height: 1.7;
+    }
+
+    .delete-product-name {
+        color: #d63384;
+        font-weight: 800;
+    }
+
+    .delete-warning {
+        background: #fff0f0;
+        color: #dc3545 !important;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        margin: 20px 0;
+    }
+
+    .delete-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+    }
+
+    .delete-actions button,
+    .delete-actions a {
+        padding: 11px 20px;
+        border-radius: 8px;
+        border: none;
+        text-decoration: none;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-confirm-delete {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-confirm-delete:hover {
+        background: #b02a37;
+    }
+
+    .btn-cancel-delete {
+        background: #777;
+        color: white;
+    }
+
+    .btn-cancel-delete:hover {
+        background: #555;
+    }
+</style>
+
+<div class="delete-container">
+
+    <div class="delete-icon">🗑️</div>
+
+    <h2>Xác nhận xóa sản phẩm</h2>
+
+    <p>
+        Bạn có chắc chắn muốn xóa sản phẩm
+        <span class="delete-product-name">
+            "{{ product.name }}"
+        </span>
+        không?
+    </p>
+
+    <div class="delete-warning">
+        ⚠️ Lưu ý: Thao tác này có thể không hoàn tác được.
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="delete-actions">
+            <button type="submit" class="btn-confirm-delete">
+                🗑️ Xác nhận xóa
+            </button>
+
+            <a href="{% url 'products:admin_product_list' %}"
+               class="btn-cancel-delete">
+                Hủy bỏ
+            </a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

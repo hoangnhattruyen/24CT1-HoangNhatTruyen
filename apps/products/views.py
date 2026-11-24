@@ -5,6 +5,32 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Category, Brand, Product, ProductReview
 from apps.promotions.models import Banner, FlashSale
+from django.contrib.auth.decorators import user_passes_test
+from django.core.paginator import Paginator
+from apps.accounts.models import UserProfile
+from .forms import ProductForm
+
+
+# Kiểm tra tài khoản có vai trò ADMIN hoặc STAFF
+def is_admin_or_staff(user):
+    if not user.is_authenticated:
+        return False
+
+    try:
+        return user.profile.role in ['ADMIN', 'STAFF']
+    except UserProfile.DoesNotExist:
+        return False
+
+
+# Chỉ ADMIN mới được thêm, sửa, xóa sản phẩm
+def is_admin(user):
+    if not user.is_authenticated:
+        return False
+
+    try:
+        return user.profile.role == 'ADMIN'
+    except UserProfile.DoesNotExist:
+        return False
 
 def index_view(request):
     banners = Banner.objects.filter(is_active=True, position='HERO')[:4]
@@ -143,3 +169,187 @@ def search_api_view(request):
                 'url': f"/product/{p.slug}/",
             })
     return JsonResponse({'results': results})
+
+
+# ==========================================
+# QUẢN LÝ SẢN PHẨM
+# ==========================================
+
+# ADMIN và STAFF được xem danh sách sản phẩm
+@user_passes_test(is_admin_or_staff)
+def admin_product_list_view(request):
+    products = Product.objects.select_related(
+        'category', 'brand'
+    ).all()
+
+    # Tìm kiếm sản phẩm
+    keyword = request.GET.get('q', '').strip()
+
+    if keyword:
+        products = products.filter(
+            Q(name__icontains=keyword)
+            | Q(sku__icontains=keyword)
+            | Q(category__name__icontains=keyword)
+            | Q(brand__name__icontains=keyword)
+        )
+
+    # Lọc trạng thái
+    status = request.GET.get('status', '')
+
+    if status == 'active':
+        products = products.filter(is_active=True)
+    elif status == 'inactive':
+        products = products.filter(is_active=False)
+
+    # Phân trang
+    paginator = Paginator(products, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    context = {
+        'products': page_obj,
+        'keyword': keyword,
+        'current_status': status,
+
+        # Thống kê
+        'total_products': Product.objects.count(),
+        'active_count': Product.objects.filter(
+            is_active=True
+        ).count(),
+        'inactive_count': Product.objects.filter(
+            is_active=False
+        ).count(),
+
+        # Phân quyền
+        'is_admin': request.user.profile.role == 'ADMIN',
+    }
+
+    return render(
+        request,
+        'pages/admin_products.html',
+        context
+    )
+
+
+# ==========================================
+# THÊM SẢN PHẨM
+# ==========================================
+
+@user_passes_test(is_admin)
+def admin_product_create_view(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+
+        if form.is_valid():
+            product = form.save()
+
+            messages.success(
+                request,
+                f'Đã thêm sản phẩm "{product.name}" thành công!'
+            )
+
+            return redirect('products:admin_product_list')
+
+        messages.error(
+            request,
+            'Vui lòng kiểm tra lại thông tin sản phẩm.'
+        )
+
+    else:
+        form = ProductForm()
+
+    context = {
+        'form': form,
+        'page_title': 'THÊM SẢN PHẨM MỚI',
+        'submit_text': 'Lưu sản phẩm',
+    }
+
+    return render(
+        request,
+        'pages/admin_product_form.html',
+        context
+    )
+
+
+# ==========================================
+# SỬA SẢN PHẨM
+# ==========================================
+
+@user_passes_test(is_admin)
+def admin_product_edit_view(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == 'POST':
+        form = ProductForm(
+            request.POST,
+            instance=product
+        )
+
+        if form.is_valid():
+            updated_product = form.save()
+
+            messages.success(
+                request,
+                f'Đã cập nhật sản phẩm "{updated_product.name}" thành công!'
+            )
+
+            return redirect('products:admin_product_list')
+
+        messages.error(
+            request,
+            'Vui lòng kiểm tra lại thông tin sản phẩm.'
+        )
+
+    else:
+        form = ProductForm(instance=product)
+
+    context = {
+        'form': form,
+        'product': product,
+        'page_title': 'CẬP NHẬT SẢN PHẨM',
+        'submit_text': 'Cập nhật sản phẩm',
+    }
+
+    return render(
+        request,
+        'pages/admin_product_form.html',
+        context
+    )
+
+
+# ==========================================
+# XÓA SẢN PHẨM
+# ==========================================
+
+@user_passes_test(is_admin)
+def admin_product_delete_view(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == 'POST':
+        product_name = product.name
+
+        try:
+            product.delete()
+
+            messages.success(
+                request,
+                f'Đã xóa sản phẩm "{product_name}" thành công!'
+            )
+
+        except Exception:
+            messages.error(
+                request,
+                'Không thể xóa sản phẩm này vì dữ liệu đang được sử dụng '
+                'hoặc có liên kết với đơn hàng.'
+            )
+
+        return redirect('products:admin_product_list')
+
+    context = {
+        'product': product,
+    }
+
+    return render(
+        request,
+        'pages/admin_product_confirm_delete.html',
+        context
+    )

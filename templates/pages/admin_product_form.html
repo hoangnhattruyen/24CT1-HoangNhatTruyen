@@ -1,0 +1,132 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }} - M&B Shop{% endblock %}
+
+{% block content %}
+<style>
+    .product-form-box {
+        max-width: 850px;
+        margin: 30px auto;
+        padding: 25px;
+        background: white;
+        border: 1px solid #f1dce7;
+        border-radius: 14px;
+    }
+
+    .product-form-box h1 {
+        color: #d63384;
+        font-size: 23px;
+        margin-bottom: 22px;
+    }
+
+    .product-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .product-form-field label {
+        display: block;
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .product-form-field input:not([type="checkbox"]),
+    .product-form-field select,
+    .product-form-field textarea {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box;
+    }
+
+    .product-form-field input:focus,
+    .product-form-field select:focus,
+    .product-form-field textarea:focus {
+        outline: none;
+        border-color: #e83e8c;
+    }
+
+    .product-form-field .checkbox-field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 25px;
+    }
+
+    .product-form-error {
+        color: #dc3545;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .product-form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+        flex-wrap: wrap;
+    }
+
+    @media(max-width: 600px) {
+        .product-form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="product-form-box">
+    <h1>📦 {{ page_title }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="product-form-error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="product-form-grid">
+            {% for field in form %}
+                <div class="product-form-field">
+                    {% if field.field.widget.input_type == 'checkbox' %}
+                        <label class="checkbox-field">
+                            {{ field }}
+                            {{ field.label }}
+                        </label>
+                    {% else %}
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <div class="product-form-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="product-form-actions">
+            <button type="submit"
+                    class="btn-checkout-primary"
+                    style="margin:0; width:auto; padding:12px 22px;">
+                💾 {{ submit_text|default:"Lưu sản phẩm" }}
+            </button>
+
+            <a href="{% url 'products:admin_product_list' %}"
+               class="btn-checkout-primary"
+               style="margin:0; width:auto; padding:12px 22px; background:#777; text-decoration:none;">
+                Quay lại
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

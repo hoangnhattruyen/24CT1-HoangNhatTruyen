@@ -1,0 +1,431 @@
+
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Quản lý sản phẩm - M&B Shop{% endblock %}
+
+{% block content %}
+<style>
+    .product-management {
+        padding: 24px 0 40px;
+    }
+
+    .management-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 22px;
+    }
+
+    .management-header h1 {
+        color: #d63384;
+        font-size: 25px;
+        font-weight: 900;
+        margin: 0 0 6px;
+    }
+
+    .management-header p {
+        color: #777;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .management-btn {
+        display: inline-block;
+        background: #e83e8c;
+        color: white;
+        padding: 11px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .management-btn:hover {
+        background: #c92d76;
+        color: white;
+    }
+
+    .management-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-bottom: 22px;
+    }
+
+    .management-stat {
+        background: white;
+        border: 1px solid #f1dce7;
+        border-radius: 12px;
+        padding: 18px;
+    }
+
+    .management-stat span {
+        display: block;
+        color: #777;
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .management-stat strong {
+        font-size: 24px;
+        color: #d63384;
+    }
+
+    .management-filter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 18px;
+        background: white;
+        border: 1px solid #f1dce7;
+        border-radius: 12px;
+        margin-bottom: 18px;
+    }
+
+    .management-filter input,
+    .management-filter select {
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        min-width: 180px;
+    }
+
+    .management-table-wrap {
+        background: white;
+        border: 1px solid #f1dce7;
+        border-radius: 12px;
+        overflow-x: auto;
+    }
+
+    .management-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+
+    .management-table th,
+    .management-table td {
+        padding: 13px 12px;
+        border-bottom: 1px solid #f2e8ed;
+        text-align: left;
+        font-size: 13px;
+    }
+
+    .management-table th {
+        background: #fff0f6;
+        color: #b52c70;
+        font-weight: 800;
+    }
+
+    .management-product {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 220px;
+    }
+
+    .management-product img {
+        width: 55px;
+        height: 55px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #fff7fa;
+    }
+
+    .management-product strong {
+        color: #333;
+    }
+
+    .management-status {
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-active {
+        background: #e4f8ec;
+        color: #198754;
+    }
+
+    .status-inactive {
+        background: #fce8e8;
+        color: #dc3545;
+    }
+
+    .management-empty {
+        text-align: center !important;
+        padding: 35px !important;
+        color: #888;
+    }
+
+    .management-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding: 20px;
+    }
+
+    .management-pagination a,
+    .management-pagination span {
+        padding: 8px 12px;
+        border: 1px solid #f1dce7;
+        border-radius: 7px;
+        text-decoration: none;
+        color: #d63384;
+    }
+
+    .management-pagination .current {
+        background: #e83e8c;
+        color: white;
+    }
+
+    /* Nút thao tác sản phẩm */
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .action-buttons a {
+        display: inline-block;
+        padding: 7px 11px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+    .action-buttons .btn-edit {
+        background: #e3f0ff;
+        color: #2675d8;
+        border: 1px solid #b8d7ff;
+    }
+
+    .action-buttons .btn-edit:hover {
+        background: #2675d8;
+        color: white;
+    }
+
+    .action-buttons .btn-delete {
+        background: #ffe8e8;
+        color: #e53945;
+        border: 1px solid #ffcaca;
+    }
+
+    .action-buttons .btn-delete:hover {
+        background: #e53945;
+        color: white;
+    }
+
+    @media(max-width: 600px) {
+        .management-header h1 {
+            font-size: 21px;
+        }
+
+        .management-filter input,
+        .management-filter select {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="product-management">
+
+    <!-- TIÊU ĐỀ -->
+    <div class="management-header">
+        <div>
+            <h1>QUẢN LÝ SẢN PHẨM</h1>
+            <p>Quản lý danh sách sản phẩm của hệ thống M&B Shop</p>
+        </div>
+
+        {% if is_admin %}
+        <div class="management-actions">
+            <a href="{% url 'products:admin_product_create' %}"
+               class="management-btn">
+                + Thêm sản phẩm
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- THỐNG KÊ -->
+    <div class="management-stats">
+        <div class="management-stat">
+            <span>Tổng số sản phẩm</span>
+            <strong>{{ total_products|intcomma }}</strong>
+        </div>
+
+        <div class="management-stat">
+            <span>Sản phẩm đang kinh doanh</span>
+            <strong>{{ active_count|default:"0"|intcomma }}</strong>
+        </div>
+
+        <div class="management-stat">
+            <span>Sản phẩm ngừng kinh doanh</span>
+            <strong>{{ inactive_count|default:"0"|intcomma }}</strong>
+        </div>
+    </div>
+
+    <!-- TÌM KIẾM VÀ LỌC -->
+    <form method="GET" class="management-filter">
+        <input
+            type="text"
+            name="q"
+            value="{{ keyword }}"
+            placeholder="Tìm tên sản phẩm, SKU, thương hiệu..."
+        >
+
+        <select name="status">
+            <option value="">Tất cả trạng thái</option>
+
+            <option value="active"
+                {% if current_status == 'active' %}selected{% endif %}>
+                Đang kinh doanh
+            </option>
+
+            <option value="inactive"
+                {% if current_status == 'inactive' %}selected{% endif %}>
+                Ngừng kinh doanh
+            </option>
+        </select>
+
+        <button type="submit" class="management-btn">
+            Tìm kiếm
+        </button>
+
+        <a href="{% url 'products:admin_product_list' %}"
+           class="management-btn"
+           style="background:#777;">
+            Làm mới
+        </a>
+    </form>
+
+    <!-- BẢNG SẢN PHẨM -->
+    <div class="management-table-wrap">
+        <table class="management-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Sản phẩm</th>
+                    <th>SKU</th>
+                    <th>Danh mục</th>
+                    <th>Thương hiệu</th>
+                    <th>Giá bán</th>
+                    <th>Tồn kho</th>
+                    <th>Trạng thái</th>
+
+                    {% if is_admin %}
+                    <th>Thao tác</th>
+                    {% endif %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>
+                        <div class="management-product">
+                            <img
+                                src="{{ product.display_image }}"
+                                alt="{{ product.name }}"
+                                onerror="this.src='https://placehold.co/100x100?text=Product'"
+                            >
+                            <strong>{{ product.name }}</strong>
+                        </div>
+                    </td>
+
+                    <td>{{ product.sku }}</td>
+
+                    <td>{{ product.category.name }}</td>
+
+                    <td>{{ product.brand.name|default:"Chưa có" }}</td>
+
+                    <td style="font-weight:800;color:#d63384;">
+                        {{ product.price|intcomma }}đ
+                    </td>
+
+                    <td>{{ product.stock|intcomma }}</td>
+
+                    <td>
+                        {% if product.is_active %}
+                        <span class="management-status status-active">
+                            Đang bán
+                        </span>
+                        {% else %}
+                        <span class="management-status status-inactive">
+                            Ngừng bán
+                        </span>
+                        {% endif %}
+                    </td>
+
+                    {% if is_admin %}
+                    <td>
+                        <div class="action-buttons">
+                            <a
+                                href="{% url 'products:admin_product_edit' product.pk %}"
+                                class="btn-edit">
+                                ✏️ Sửa
+                            </a>
+
+                            <a
+                                href="{% url 'products:admin_product_delete' product.pk %}"
+                                class="btn-delete">
+                                🗑️ Xóa
+                            </a>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td
+                        colspan="{% if is_admin %}9{% else %}8{% endif %}"
+                        class="management-empty">
+                        Không tìm thấy sản phẩm nào.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- PHÂN TRANG -->
+        {% if products.has_other_pages %}
+        <div class="management-pagination">
+
+            {% if products.has_previous %}
+            <a href="?q={{ keyword|urlencode }}&status={{ current_status }}&page={{ products.previous_page_number }}">
+                Trước
+            </a>
+            {% endif %}
+
+            <span class="current">
+                {{ products.number }} /
+                {{ products.paginator.num_pages }}
+            </span>
+
+            {% if products.has_next %}
+            <a href="?q={{ keyword|urlencode }}&status={{ current_status }}&page={{ products.next_page_number }}">
+                Tiếp
+            </a>
+            {% endif %}
+
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

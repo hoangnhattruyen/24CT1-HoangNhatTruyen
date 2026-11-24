@@ -4,6 +4,9 @@ from . import views
 app_name = 'products'
 
 urlpatterns = [
+    # =========================
+    # TRANG SẢN PHẨM KHÁCH HÀNG
+    # =========================
     path('', views.index_view, name='index'),
     path('category/<slug:slug>/', views.category_view, name='category'),
     path('product/<slug:slug>/', views.product_detail_view, name='product_detail'),
@@ -11,4 +14,28 @@ urlpatterns = [
     path('best-sellers/', views.best_sellers_view, name='best_sellers'),
     path('top-rated/', views.top_rated_view, name='top_rated'),
     path('api/search/', views.search_api_view, name='search_api'),
+
+    # =========================
+    # QUẢN LÝ SẢN PHẨM ADMIN / STAFF
+    # =========================
+    path(
+        'management/',
+        views.admin_product_list_view,
+        name='admin_product_list'
+    ),
+    path(
+    'management/add/',
+    views.admin_product_create_view,
+    name='admin_product_create'
+    ),
+    path(
+    'management/<int:pk>/edit/',
+    views.admin_product_edit_view,
+    name='admin_product_edit'
+    ),
+    path(
+        'management/<int:pk>/delete/',
+        views.admin_product_delete_view,
+        name='admin_product_delete'
+    ),
 ]
