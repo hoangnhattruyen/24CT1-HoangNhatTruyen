@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 try:
     from dotenv import load_dotenv
-    load_dotenv(BASE_DIR / '.env', override=True)
+    load_dotenv(BASE_DIR / '.env')
 except ImportError:
     pass
 
@@ -14,9 +14,22 @@ try:
 except ImportError:
     dj_database_url = None
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-concung-ecommerce-dev-key')
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv(
+        'ALLOWED_HOSTS',
+        'mandbshop.onrender.com,localhost,127.0.0.1'
+    ).split(',')
+    if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://mandbshop.onrender.com',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
